@@ -5,89 +5,99 @@ import { Db } from '../../../lib/db';
 import BaseUser from "../../../models/baseUser";
 
 // Environment variables
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'prref_token';
 const TOKEN_EXPIRES_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
-// Cookie setter using NextResponse.cookies API
+// Set JWT token cookie
 function setTokenCookie(res: NextResponse, token: string) {
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookies.set({
-        name: COOKIE_NAME,
-        value: token,
-        httpOnly: true,
-        path: '/',
-        maxAge: TOKEN_EXPIRES_SECONDS,
-        sameSite: 'strict',
-        secure: isProd,
-    });
+  const isProd = process.env.NODE_ENV === 'production';
+  res.cookies.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    path: '/',
+    maxAge: TOKEN_EXPIRES_SECONDS,
+    sameSite: 'strict',
+    secure: isProd,
+  });
 }
 
+// POST: Signin user by verifying email and password
 export async function POST(request: NextRequest) {
-    await Db();
+  if (!JWT_SECRET) {
+    return NextResponse.json({ error: 'JWT secret not configured' }, { status: 500 });
+  }
 
-    try {
-        const body = await request.json();
-        const { email, password } = body;
+  await Db();
 
-        if (!email || !password) {
-            return NextResponse.json(
-                { error: 'email and password required' },
-                { status: 400 }
-            );
-        }
+  try {
+    const body = await request.json();
+    const { email, password } = body;
 
-        const normalizedEmail = String(email).trim().toLowerCase();
-
-        // Find user in base collection
-        const user = await BaseUser.findOne({ email: normalizedEmail }).lean();
-        if (!user) {
-            return NextResponse.json(
-                { error: 'Invalid credentials' },
-                { status: 401 }
-            );
-        }
-
-        // Validate password
-        const valid = await bcrypt.compare(password, user.password);
-        if (!valid) {
-            return NextResponse.json(
-                { error: 'Invalid credentials' },
-                { status: 401 }
-            );
-        }
-
-        // Create JWT
-        const token = jwt.sign(
-            {
-                id: user._id.toString(),
-                role: user.role,
-                email: user.email
-            },
-            JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
-        // Prepare and return response
-        const res = NextResponse.json({
-            ok: true,
-            user: {
-                id: user._id,
-                fullname: user.fullname,
-                email: user.email,
-                role: user.role,
-                phone: user.phone || null,
-                specialization: user.specialization || null
-            }
-        });
-
-        setTokenCookie(res, token);
-        return res;
-    } catch (err) {
-        console.error('signin error', err);
-        return NextResponse.json(
-            { error: 'Server error during signin' },
-            { status: 500 }
-        );
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: 'Email and password required' },
+        { status: 400 }
+      );
     }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    // Find user in base collection, including all discriminator fields
+    const user = await BaseUser.findOne({ email: normalizedEmail }).lean();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
+
+    // Validate password
+    const valid = await bcrypt.compare(password, user.password );
+    if (!valid) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
+
+    // Create JWT
+    const token = jwt.sign(
+      {
+        id: user._id.toString(),
+        role: user.role,
+        email: user.email,
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    await BaseUser.updateOne({ _id: user._id }, { refreshToken: token });
+
+    // Prepare user response
+    const responsePayload = {
+      ok: true,
+      user: {
+        id: user._id ,
+        fullname: user.fullname,
+        email: user.email,
+        role: user.role,
+        phone: user.phone || null,
+        specialization: user.specialization || null,
+        experience: typeof user.experience !== "undefined" ? user.experience : null,
+        token: token,
+      },
+    };
+
+    // Set HttpOnly auth cookie
+    const res = NextResponse.json(responsePayload, { status: 200 });
+    setTokenCookie(res, token);
+    return res;
+  } catch (err) {
+    console.error('signin error', err);
+
+    return NextResponse.json(
+      { error: 'Server error during signin' },
+      { status: 500 }
+    );
+  }
 }

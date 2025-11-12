@@ -2,10 +2,6 @@ import BaseUser from './baseUser.js';
 import mongoose from 'mongoose';
 
 const clinicDoctorSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, 'Provide the username'],
-  },
   phone: {
     type: String,
     required: [true, 'Provide the phone number'],
@@ -14,7 +10,11 @@ const clinicDoctorSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Provide the specialization'],
   },
+  experience: {
+    type: Number,
+    default: 0,
+  }
 }, { _id: false });
 
-const ClinicDoctor = BaseUser.discriminator('clinic', clinicDoctorSchema);
+const ClinicDoctor = BaseUser.discriminator('clinicdoctor', clinicDoctorSchema);
 export default ClinicDoctor;

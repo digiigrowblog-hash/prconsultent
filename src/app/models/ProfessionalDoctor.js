@@ -1,4 +1,3 @@
-// models/ProfessionalDoctor.js
 import BaseUser from './baseUser.js';
 import mongoose from 'mongoose';
 
@@ -17,6 +16,6 @@ const professionalDoctorSchema = new mongoose.Schema({
   },
 });
 
-// Do NOT set _id: false for discriminators
-const ProfessionalDoctor = BaseUser.discriminator('professional', professionalDoctorSchema);
+// Note: Do NOT set _id: false for discriminators with own data
+const ProfessionalDoctor = BaseUser.discriminator('professionaldoctor', professionalDoctorSchema);
 export default ProfessionalDoctor;
