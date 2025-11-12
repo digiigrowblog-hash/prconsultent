@@ -1,7 +1,7 @@
 import BaseUser from './baseUser.js';
 import mongoose from 'mongoose';
 
-const clinicDoctorSchema = new mongoose.Schema({
+const professionalDoctorSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, 'Provide the phone number'],
@@ -12,9 +12,10 @@ const clinicDoctorSchema = new mongoose.Schema({
   },
   experience: {
     type: Number,
-    default: 0,
-  }
-}, { _id: false });
+    default: null,
+  },
+});
 
-const ClinicDoctor = BaseUser.discriminator('clinicdoctor', clinicDoctorSchema);
-export default ClinicDoctor;
+// Note: Do NOT set _id: false for discriminators with own data
+const ProfessionalDoctor = BaseUser.discriminator('professionaldoctor', professionalDoctorSchema);
+export default ProfessionalDoctor;

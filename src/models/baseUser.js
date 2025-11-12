@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const options = {
-  discriminatorKey: 'role', 
+  discriminatorKey: 'role',
   timestamps: true,
 };
 
@@ -14,7 +14,7 @@ const baseUserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Provide the email'],
-    unique: true,
+    unique: true, // this creates a unique index on email
     lowercase: true,
     trim: true,
   },
@@ -31,7 +31,6 @@ const baseUserSchema = new mongoose.Schema({
   },
 }, options);
 
-baseUserSchema.index({ email: 1 });
 
 const BaseUser = mongoose.models.BaseUser || mongoose.model('BaseUser', baseUserSchema);
 export default BaseUser;
