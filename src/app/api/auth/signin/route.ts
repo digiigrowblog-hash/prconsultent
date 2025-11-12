@@ -3,7 +3,16 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Db } from '../../../../lib/db';
 import BaseUser from "../../../../models/baseUser";
-
+interface User{
+  _id: string;
+  fullname: string;
+  email: string;
+  role: string;
+  phone?: string;
+  specialization?: string;
+  experience?: number;
+  password: string;
+}
 // Environment variables
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'prref_token';
