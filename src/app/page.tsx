@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Lock } from "lucide-react"; // Lucide icons
-import {ExtraSections} from "@/components/HomeComponent"
+import { ExtraSections } from "@/components/HomeComponent";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const pathname = usePathname();
@@ -13,8 +14,14 @@ export default function Home() {
   return (
     <div className="flex min-h-screen max-w-full bg-white font-sans flex-col ">
       <Header />
-      <section className="relative flex md:flex-row flex-col max-w-full text-center py-16
-      bg-linear-to-tr from-white via-cyan-50 to-white overflow-hidden px-2 md:px-4 ">
+
+      <motion.section
+        className="relative flex md:flex-row flex-col max-w-full text-center py-16
+        bg-linear-to-tr from-white via-cyan-50 to-white overflow-hidden px-2 md:px-4 "
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
         <div
           className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#d7f6fc] 
           rounded-full filter blur-2xl opacity-70 -z-10"
@@ -28,7 +35,7 @@ export default function Home() {
               Expert Care from Leading Doctors 
             </h1>
             <h3 className="md:text-sm text-xs text-gray-600 text-justify">
-              Welcome to PrConsultant, where patients find trusted health
+              Welcome to DocRefer, where patients find trusted health
               professionals specializing in surgery, general medicine, and
               a variety of healthcare services. Our platform connects you
               with highly qualified doctors and surgeons who are dedicated
@@ -66,7 +73,6 @@ export default function Home() {
               </p>
             </form>
             {/* Sign-In Form END */}
-
           </div>
         </div>
         <div className=" md:w-[40%] w-full">
@@ -75,10 +81,11 @@ export default function Home() {
             alt="Doctor Image"
             width={500}
             height={500}
-            className="mx-auto"
+            className="mx-auto md:w-[500px] md:h-[500px] sm:w-[450px] sm-h-[300px] w-[290px] h-[300px] object-cover"
           />
         </div>
-      </section>
+      </motion.section>
+
       <ExtraSections />
       <Footer />
     </div>

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BellRing } from "lucide-react";
+import { BellRing , CircleUser , LogOut} from "lucide-react";
 import { usePathname } from "next/navigation";
+
+const user = true; // Replace with actual authentication logic
 
 
 export default function Header() {
@@ -29,32 +31,24 @@ export default function Header() {
                         Home
                     </Link>
                     <Link
-                        href="/about"
-                        className={`${pathname === "/about" ? "text-blue-600 font-semibold" : "text-gray-700"
+                        href="/doctorInfo"
+                        className={`${pathname === "/doctorInfo" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"
                             } hover:text-[#00a0a8] hidden md:block`}
                     >
                         DoctorInfo
                     </Link>
                     <Link
-                        href="/services"
-                        className={`${pathname === "/services"
-                                ? "text-blue-600 font-semibold"
-                                : "text-gray-700"
+                        href="/notification"
+                        className={`${pathname === "/notification"
+                                ?"text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"
                             } hover:text-[#00a0a8] hidden md:block`}
                     >
                         <BellRing className="w-5 h-5" />
                     </Link>
-                    {/* <Link
-                        href="/contact"
-                        className={`${pathname === "/contact"
-                                ? "text-blue-600 font-semibold"
-                                : "text-gray-700"
-                            } hover:text-[#00a0a8] hidden md:block`}
-                    >
-                        file
-                    </Link> */}
+                    {}
+                   
 
-                    <Link
+                    {user ? <CircleUser  className =""/> :<Link
                         href="/signup"
                         className={`${pathname === "/signup"
                                 ? "text-blue-600 font-semibold"
@@ -62,17 +56,25 @@ export default function Header() {
                             } hover:text-[#00a0a8]  bg-gray-200 px-3 py-1.5 rounded-md text-center hidden md:block text-sm md:text-base`}
                     >
                         Signup
-                    </Link>
+                    </Link>}
 
-                    <Link
+                  {user ? <Link
                         href="/signin"
                         className={`${pathname === "/signin"
                                 ? "text-blue-600 font-semibold"
                                 : "text-gray-700"
                             } hover:text-[#00a0a8] bg-gray-200 px-3 py-1.5 rounded-md text-center  text-sm md:text-base`}
                     >
-                        <span className="mt-[-5px]">Login</span>
-                    </Link>
+                        <span className="mt-[-5px]"><LogOut/></span>
+                    </Link> : <Link
+                        href="/signin"
+                        className={`${pathname === "/signin"
+                                ? "text-blue-600 font-semibold"
+                                : "text-gray-700"
+                            } hover:text-[#00a0a8] bg-gray-200 px-3 py-1.5 rounded-md text-center  text-sm md:text-base`}
+                    >
+                        <span className="mt-[-5px]">Login </span>
+                    </Link>}
                     {
 
                     }
