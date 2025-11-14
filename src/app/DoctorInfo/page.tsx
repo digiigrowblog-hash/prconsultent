@@ -28,6 +28,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description: `Dr Rahul R Gupta founder surgeon of Cardium is a renowned interventional 
          cardiologist who has been practising in Mumbai for over 19 years. Dr Gupta has ensured
           that the most advanced treatment and techniques from all over the world are made available 
@@ -44,6 +45,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description:
         `Dr Shoaib Padaria graduated from the Seth G S Medical College in Mumbai 
          completing his MD and DM in Cardiology. He was further trained in Interventional Cardiac 
@@ -61,6 +63,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description: `Dr. Manish Sontakke is a Spine Surgeon,Orthopedist and Joint 
          Replacement Surgeon in Fortis Hiranandani hospital vashi and has an experience 
          of 12 years in these fields. He completed MBBS from Mahatma Gandhi Institute of
@@ -76,6 +79,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description: `"Dr. Rahul Bhatambre is a highly experienced and renowned psychiatrist 
         in Navi Mumbai and a leading sexologist in Navi Mumbai, offering expert care for 
         a wide range of psychiatric disorders, sexual dysfunction treatments, and mental
@@ -92,6 +96,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description: `Dr. Veeral M. Aliporewala is a highly-regarded dermatologist, 
         pediatric dermatologist, and venereologist in Navi Mumbai, known for his 
         expertise in addressing the root causes of skin and hair issues. With over 
@@ -105,6 +110,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description: `Dipak Bhangale - Best Gastroenterologist in Navi Mumbai - Kokilaben Hospital 
         Dr. Dipak Bhangale Consultant Gastroenterology, Hepatology, Interventional Endoscopy, 
         Liver Transplantation M.B.B.S., MD, Dr. NB SS (Medical Gastroenterology and Hepatology), 
@@ -122,6 +128,7 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
+      specialization: "Interventional Cardiologist",
       description: `Dr. Amit Nagarik is a highly accomplished medical professional with a 
         focus on Nephrology, he has more than 18 years of experience in the field of Nephrology. 
         Holding the prestigious degrees of M.D and DNB (Medicine) along with a specialization 
@@ -137,7 +144,8 @@ export default function DoctorInfoPage() {
       age: 45,
       experience: "15+ ",
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      description: `Dr. Ashish S Naik’s expertise in treating a wide spectrum of spine conditions 
+      specialization: "Interventional Cardiologist",
+      description: `Dr. Ashish S Naik's expertise in treating a wide spectrum of spine conditions 
         ensures that patients receive comprehensive and personalized care. From minimally invasive 
         procedures and endoscopic surgeries to managing complex conditions like spinal tuberculosis, 
         spinal trauma, and ankylosing spondylitis, Dr. Naik offers advanced, evidence-based treatments 
@@ -216,8 +224,10 @@ export default function DoctorInfoPage() {
             age={doctor.age}
             experience={doctor.experience}
             contact={doctor.contact}
+            specialization={doctor.specialization}
             description={doctor.description}
             buttonLabel="Schedule Appointment"
+
             onContactClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               setFormData({ ...formData, ReferName: doctor.name });
               setShowForm(true);

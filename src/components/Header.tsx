@@ -19,7 +19,7 @@ const user = {
 export default function Header() {
   const pathname = usePathname();
   const [showProfile, setShowProfile] = useState(false);
-  const profileRef = useRef();
+  const profileRef = useRef(null);
 
   // Close popup on outside click
   useEffect(() => {

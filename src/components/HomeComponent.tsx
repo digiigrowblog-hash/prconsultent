@@ -17,7 +17,7 @@ const hoverTransition = { type: "spring", stiffness: 300 } as any;
 
 const reviews = [
   {
-    text: "PrConsultant took the fear out of my surgery experience. The specialists are truly world-class and attentive.",
+    text: "DocRefer took the fear out of my surgery experience. The specialists are truly world-class and attentive.",
     name: "Anjali S.",
     location: "Mumbai",
     rating: 5,
@@ -29,7 +29,7 @@ const reviews = [
     rating: 4,
   },
   {
-    text: "The personalized treatment plan made all the difference in my recovery. Thank you PrConsultant!",
+    text: "The personalized treatment plan made all the difference in my recovery. Thank you DocRefer!",
     name: "Meera P.",
     location: "Bangalore",
     rating: 5,

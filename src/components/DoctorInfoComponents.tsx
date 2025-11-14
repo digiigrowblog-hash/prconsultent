@@ -3,7 +3,7 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Phone, Mail, User2 } from "lucide-react"; // Lucide icons
+import { Phone, Mail, User2, GraduationCap} from "lucide-react"; // Lucide icons
 import PropTypes from "prop-types";
 
 
@@ -15,7 +15,9 @@ interface DoctorInfoProps {
     contact: {
     phone: string;
     email: string;
+    
   };
+  specialization?: string;
   onContactClick: () => void;
   buttonLabel?: string;
   description: string;
@@ -41,6 +43,7 @@ export default function DoctorInfo({
   age,
   experience,
   contact,
+  specialization,
   onContactClick,
   buttonLabel = "Contact",
   description,
@@ -79,6 +82,10 @@ export default function DoctorInfo({
           <div className="flex items-center gap-2">
             <Mail size={18} className="text-[#09879a]" />
             <span className="text-sm">{contact.email}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <GraduationCap size={18} className="text-[#09879a]" />
+            <span className="text-sm">{specialization}</span>
           </div>
 
           <button
