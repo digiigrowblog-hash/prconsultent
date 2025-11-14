@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BellRing, CircleUser, LogOut, User2, Mail, Phone, Briefcase } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 // Example user data (replace with your real user context)
 const user = {
@@ -13,6 +14,7 @@ const user = {
   experience: 10,
   phone: "+91-9988776655"
 };
+// const user = false; 
 
 export default function Header() {
   const pathname = usePathname();
@@ -42,24 +44,27 @@ export default function Header() {
 
       <div>
         <nav className="space-x-4 flex justify-between items-center">
-            {/* Home */}
+          {/* Home */}
           <Link
             href="/"
-            className={`${pathname === "/" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block`}
+            className={`${pathname === "/" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"}
+            hover:text-[#00a0a8] hidden md:block`}
           >
             Home
           </Link>
-            {/* DoctorInfo */}
+          {/* DoctorInfo */}
           <Link
             href="/doctorInfo"
-            className={`${pathname === "/doctorInfo" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block`}
+            className={`${pathname === "/doctorInfo" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"}
+             hover:text-[#00a0a8] hidden md:block`}
           >
             DoctorInfo
           </Link>
-            {/* Notifications */}
+          {/* Notifications */}
           <Link
             href="/notification"
-            className={`${pathname === "/notification" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block`}
+            className={`${pathname === "/notification" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"}
+             hover:text-[#00a0a8] hidden md:block`}
           >
             <BellRing className="w-5 h-5" />
           </Link>
@@ -70,7 +75,7 @@ export default function Header() {
               className="relative focus:outline-none"
               aria-label="User menu"
             >
-              <CircleUser className={`w-7 h-7 transition ${showProfile ? "text-[#09879a]" 
+              <CircleUser className={`w-7 h-7 transition ${showProfile ? "text-[#09879a]"
                 : "text-gray-700"}`} />
               <AnimatePresence>
                 {showProfile && (
@@ -90,7 +95,7 @@ export default function Header() {
                       <span className="text-lg font-semibold text-[#09879a]">{user.name}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <Mail size={18} className="text-[#09879a]" />
+                      <Mail size={18} className="text-[#0997ad]" />
                       <span>{user.email}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -102,8 +107,18 @@ export default function Header() {
                       <span>{user.phone}</span>
                     </div>
                     <div className="flex gap-3 justify-center mt-3">
-                      <button className="px-4 py-1 rounded bg-[#09879a] text-white font-semibold hover:bg-[#066172] transition">Edit</button>
-                      <button onClick={() => setShowProfile(false)} className="px-4 py-1 rounded border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition">
+                      <button className="px-4 py-1 rounded bg-[#09879a] text-white font-semibold 
+                      hover:bg-[#066172] transition" onClick={
+                        (e) => { 
+                          e.stopPropagation();
+                          toast.success("Edit profile feature coming soon!");}
+                      }>Edit</button>
+                      <button onClick={(e) => {
+                        e.stopPropagation();
+                        setShowProfile(false);
+                      }}
+                        className="px-4 py-1 rounded border border-gray-300 bg-gray-50 text-gray-700
+                         hover:bg-gray-100 transition">
                         Cancel
                       </button>
                     </div>
@@ -115,7 +130,8 @@ export default function Header() {
             <Link
               href="/signup"
               className={`${pathname === "/signup"
-                ? "text-blue-600 font-semibold" : "text-gray-700"} hover:text-[#00a0a8]  bg-gray-200 px-3 py-1.5 rounded-md text-center hidden md:block text-sm md:text-base`}
+                ? "text-blue-600 font-semibold" : "text-gray-700"} hover:text-[#00a0a8]  bg-gray-200 px-3 py-1.5 
+                rounded-md text-center hidden md:block text-sm md:text-base`}
             >
               Signup
             </Link>

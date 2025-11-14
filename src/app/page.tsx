@@ -16,7 +16,7 @@ export default function Home() {
       <Header />
 
       <motion.section
-        className="relative flex md:flex-row flex-col max-w-full text-center py-16
+        className="relative flex md:flex-row flex-col max-w-full text-center pt-16
         bg-linear-to-tr from-white via-cyan-50 to-white overflow-hidden px-2 md:px-4 "
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,13 +75,14 @@ export default function Home() {
             {/* Sign-In Form END */}
           </div>
         </div>
+
         <div className=" md:w-[40%] w-full">
           <Image
             src="/images/doctorImg.webp"
             alt="Doctor Image"
             width={500}
             height={500}
-            className="mx-auto md:w-[500px] md:h-[500px] sm:w-[450px] sm-h-[300px] w-[290px] h-[300px] object-cover"
+            className=" mx-auto md:w-[500px] md:h-[500px] sm:w-[450px] sm-h-[300px] w-[290px] h-[300px] object-cover"
           />
         </div>
       </motion.section>

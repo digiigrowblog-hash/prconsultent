@@ -5,8 +5,6 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import DoctorInfo from "@/components/DoctorInfoComponents";
 
-
-
 interface FormData {
   ReferName: string;
   YourName: string;
@@ -18,7 +16,6 @@ interface FormData {
   Image: File | null;
   Summary: string;
 }
-
 
 export default function DoctorInfoPage() {
 
