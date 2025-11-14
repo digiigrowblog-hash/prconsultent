@@ -68,18 +68,18 @@ export default function Footer() {
         <motion.div className="flex flex-col gap-4 min-w-[200px]" variants={itemVariants}>
           <h3 className="font-semibold text-lg mb-2 text-[#09879a]">Contact Us</h3>
           <a
-            href="https://wa.me/1234567890"
+            href="https://wa.me/9833233174"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 hover:text-[#66c2d7] transition-colors"
           >
-            <Smartphone size={18} /> WhatsApp: +1 234 567 890
+            <Smartphone size={18} /> WhatsApp
           </a>
           <a href="tel:+1234567890" className="flex items-center gap-2 hover:text-[#66c2d7] transition-colors">
-            <Phone size={18} /> Phone: +1 234 567 890
+            <Phone size={18} /> Phone: +91-9833233174
           </a>
           <a href="mailto:info@prconsultant.com" className="flex items-center gap-2 hover:text-[#66c2d7] transition-colors">
-            <Mail size={18} /> Email: info@prconsultant.com
+            <Mail size={18} /> Email: dineshbhutt2007@gmail.com
           </a>
         </motion.div>
 
