@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 
-const COOKIE_NAME = "prref_token"; // use your actual cookie name
+const COOKIE_NAME = process.env.COOKIE_NAME;
 const JWT_SECRET = process.env.JWT_SECRET || process.env.ACCESS_TOKEN_SECRET!;
 
 // Type guard to check if req is NextRequest
@@ -28,7 +28,7 @@ function getCookieFromRequest(req: Request | NextRequest, name: string): string 
 
 // Auth function to verify JWT and return decoded payload or null
 export async function auth(req: Request | NextRequest) {
-  const token = getCookieFromRequest(req, COOKIE_NAME);
+  const token = getCookieFromRequest(req, COOKIE_NAME!);
   if (!token) return null;
 
   try {

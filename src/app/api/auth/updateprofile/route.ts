@@ -36,7 +36,15 @@ interface UpdateProfileBody {
 }
 
 export async function PATCH(request: NextRequest) {
-  await Db();
+  try {
+    await Db();
+  } catch (dbError) {
+    console.error('Database connection error:', dbError);
+    return NextResponse.json(
+      { error: 'Database connection failed. Please try again later.' },
+      { status: 500 }
+    );
+  }
 
   try {
     

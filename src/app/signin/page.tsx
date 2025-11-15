@@ -21,16 +21,7 @@ export default function SignIn() {
 const dispatch = useAppDispatch()
 
 
-  const { loading, error, user } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    if (user) {
-      toast.success("Login successful! Redirecting...");
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
-    }
-  }, [user, router]);
+  const { loading, error } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (error) {
@@ -51,6 +42,9 @@ const dispatch = useAppDispatch()
       await dispatch(login({ email, password })).unwrap();
       setEmail("");
       setPassword("");
+      toast.success("Login successful! Redirecting...");
+      // Redirect immediately after successful login
+      router.push("/");
     } catch (err: unknown) {
       const errorMessage =
         typeof err === "string" ? err : err instanceof Error ? err.message : "Login failed";

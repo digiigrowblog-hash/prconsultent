@@ -51,12 +51,15 @@ export const login = createAsyncThunk<User, Parameters<typeof loginAPI>[0], { re
   'auth/login',
   async (data, { rejectWithValue }) => {
     try {
-      return await loginAPI(data);
+      const user = await loginAPI(data);
+      console.log('Login user:', user);
+      return user; // should be profile object
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error));
     }
   }
 );
+;
 
 export const logout = createAsyncThunk<void, void>('auth/logout', async () => {
   await logoutAPI();

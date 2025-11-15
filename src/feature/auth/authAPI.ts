@@ -22,24 +22,25 @@ export async function signupAPI(data: {
   experience?: number;
 }): Promise<User> {
   const response = await axios.post(`${API_BASE_URL}/signup`, data, { withCredentials: true });
-  return response.data.user;
+  return response.data.profile;
 }
 
 export async function loginAPI(data: { email: string; password: string }): Promise<User> {
   const response = await axios.post(`${API_BASE_URL}/signin`, data, { withCredentials: true });
-  return response.data.user;
+  return response.data.profile;
 }
 
 export async function logoutAPI(): Promise<void> {
-  await axios.post(`${API_BASE_URL}/logout`, {}, { withCredentials: true });
+ await axios.post(`${API_BASE_URL}/logout`, {}, { withCredentials: true });
 }
 
 export async function fetchProfileAPI(): Promise<User> {
-  const response = await axios.get(`${API_BASE_URL}/getprofile`, { withCredentials: true });
-  return response.data.user;
+  const response = await axios.get(`${API_BASE_URL}/getprofile`, { withCredentials: true }); 
+  console.log(response.data.profile)
+  return  response.data.profile
 }
 
 export async function updateProfileAPI(data: Partial<Omit<User, 'id' | 'email'>>): Promise<User> {
   const response = await axios.patch(`${API_BASE_URL}/updateprofile`, data, { withCredentials: true });
-  return response.data.user;
+  return response.data.profile;
 }

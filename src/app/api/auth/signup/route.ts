@@ -119,8 +119,8 @@ export async function POST(request: NextRequest) {
 
     const responsePayload = {
       ok: true,
-      user: {
-        id: userDoc._id,
+      profile: {
+        id: userDoc._id.toString(),
         fullname: userDoc.fullname,
         email: userDoc.email,
         role: role,

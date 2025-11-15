@@ -4,16 +4,36 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, Lock } from "lucide-react"; // Lucide icons
+import { Mail, Lock, Phone } from "lucide-react"; // Lucide icons
 import { ExtraSections } from "@/components/HomeComponent";
 import { motion } from "framer-motion";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "@/store/store";
+import { fetchProfile } from "@/feature/auth/authSlice";
+import { useEffect, useState, } from "react";
+
+
+
 
 export default function Home() {
   const pathname = usePathname();
 
+
+   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  
+
+    useEffect(() => {
+    dispatch(fetchProfile());
+    
+  }, [dispatch]);
+
+  console.log("User in Home Page:", user);
+
   return (
     <div className="flex min-h-screen max-w-full bg-white font-sans flex-col ">
-      <Header />
+      <Header user={user ?? null} />
+
 
       <motion.section
         className="relative flex md:flex-row flex-col max-w-full text-center pt-16

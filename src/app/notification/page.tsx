@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { Bell, CheckCircle2, X, AlertTriangle, Info } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useAppSelector } from "@/store/hooks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import type { RootState } from "@/store/store";
 
 // Demo notification data
 const notifications = [
@@ -33,6 +37,30 @@ const notifications = [
 ];
 
 export default function NotificationPage() {
+  const router = useRouter();
+  const { user, loading } = useAppSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    // Wait for auth state to load, then check if user is authenticated
+    if (!loading && !user) {
+      router.push("/signin");
+    }
+  }, [user, loading, router]);
+
+  // Show nothing while checking auth or redirecting
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white font-sans">
+        <Header />
+        <main className="flex-1 w-full px-2 md:px-0 max-w-2xl mx-auto py-10 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-600">Redirecting to login...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans">
       <Header />

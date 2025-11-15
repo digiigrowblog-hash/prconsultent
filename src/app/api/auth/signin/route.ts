@@ -36,7 +36,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'JWT secret not configured' }, { status: 500 });
   }
 
-  await Db();
+  try {
+    await Db();
+  } catch (dbError) {
+    console.error('Database connection error:', dbError);
+    return NextResponse.json(
+      { error: 'Database connection failed. Please try again later.' },
+      { status: 500 }
+    );
+  }
 
   try {
     const body = await request.json();
@@ -73,6 +81,7 @@ export async function POST(request: NextRequest) {
     const token = jwt.sign(
       {
         id: user._id.toString(),
+        fullname: user.fullname,
         role: user.role,
         email: user.email,
       },
@@ -82,18 +91,17 @@ export async function POST(request: NextRequest) {
 
     await BaseUser.updateOne({ _id: user._id }, { refreshToken: token });
 
-    // Prepare user response
+    // Prepare user response - match the expected format with 'profile' key
     const responsePayload = {
       ok: true,
-      user: {
-        id: user._id ,
+      profile: {
+        id: user._id.toString(),
         fullname: user.fullname,
         email: user.email,
         role: user.role,
         phone: user.phone || null,
         specialization: user.specialization || null,
         experience: typeof user.experience !== "undefined" ? user.experience : null,
-        token: token,
       },
     };
 

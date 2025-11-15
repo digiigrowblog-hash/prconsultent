@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import DoctorInfo from "@/components/DoctorInfoComponents";
+import { useAppSelector } from "@/store/hooks";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import type { RootState } from "@/store/store";
 
 interface FormData {
   ReferName: string;
@@ -18,8 +22,17 @@ interface FormData {
 }
 
 export default function DoctorInfoPage() {
+  const router = useRouter();
+  const { user, loading } = useAppSelector((state: RootState) => state.auth);
 
-  const yourNameFromAuth = "John Doe";
+  useEffect(() => {
+    // Wait for auth state to load, then check if user is authenticated
+    if (!loading && !user) {
+      router.push("/signin");
+    }
+  }, [user, loading, router]);
+
+  const yourNameFromAuth = user?.fullname || "Guest User";
 
   const doctors = [
     {
@@ -162,7 +175,7 @@ export default function DoctorInfoPage() {
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     ReferName: "",
-    YourName: yourNameFromAuth,
+    YourName: user?.fullname || "",
     PatientName: "",
     Age: "",
     Phone: "",
@@ -172,9 +185,29 @@ export default function DoctorInfoPage() {
     Summary: "",
   });
 
+  // Update form data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        YourName: user.fullname || "",
+      }));
+    }
+  }, [user]);
+
   const openForm = (doctorName: string) => {
+    // Check if user is logged in before opening the form
+    if (!user) {
+      toast.error("Please login to book an appointment");
+      router.push("/signin");
+      return;
+    }
     setSelectedDoctor(doctorName);
-    setFormData({ ...formData, ReferName: doctorName, YourName: yourNameFromAuth });
+    setFormData((prev) => ({ 
+      ...prev, 
+      ReferName: doctorName, 
+      YourName: user.fullname || "" 
+    }));
     setShowForm(true);
   };
   const closeForm = () => {
@@ -182,7 +215,7 @@ export default function DoctorInfoPage() {
     setSelectedDoctor(null);
     setFormData({
       ReferName: "",
-      YourName: yourNameFromAuth,
+      YourName: user?.fullname || "",
       PatientName: "",
       Age: "",
       Phone: "",
@@ -207,10 +240,32 @@ export default function DoctorInfoPage() {
 
   const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Check if user is logged in before submitting
+    if (!user) {
+      toast.error("Please login to book an appointment");
+      router.push("/signin");
+      return;
+    }
+    
     // Add your save/api logic here
-    alert(`Appointment form submitted for ${formData.ReferName}`);
+    toast.success(`Appointment form submitted for ${formData.ReferName}`);
     closeForm();
   };
+
+  // Show nothing while checking auth or redirecting
+  if (loading || !user) {
+    return (
+      <div className="flex min-h-screen max-w-full bg-white font-sans flex-col">
+        <Header />
+        <main className="flex-1 w-full px-2 md:px-0 max-w-2xl mx-auto py-10 flex items-center justify-center mt-20">
+          <div className="text-center">
+            <p className="text-gray-600">Redirecting to login...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen max-w-full bg-white font-sans flex-col ">
@@ -229,9 +284,15 @@ export default function DoctorInfoPage() {
             buttonLabel="Schedule Appointment"
 
             onContactClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation();
+              // Check if user is logged in before opening the form
+              if (!user) {
+                toast.error("Please login to book an appointment");
+                router.push("/signin");
+                return;
+              }
               setFormData({ ...formData, ReferName: doctor.name });
               setShowForm(true);
-              e.stopPropagation();
             }}
           />
         </div>
