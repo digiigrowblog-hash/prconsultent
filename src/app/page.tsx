@@ -4,31 +4,54 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, Lock, Phone } from "lucide-react"; // Lucide icons
+import { Mail, Lock } from "lucide-react"; // Lucide icons
 import { ExtraSections } from "@/components/HomeComponent";
 import { motion } from "framer-motion";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "@/store/store";
-import { fetchProfile } from "@/feature/auth/authSlice";
-import { useEffect, useState, } from "react";
-
-
-
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import type { RootState } from "@/store/store";
+import { fetchProfile, login, clearError } from "@/feature/auth/authSlice";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const { user, loading, error } = useAppSelector((state: RootState) => state.auth);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-
-   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
-  
-
-    useEffect(() => {
+  useEffect(() => {
     dispatch(fetchProfile());
-    
   }, [dispatch]);
 
-  console.log("User in Home Page:", user);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!(email && password)) {
+      toast.error("Please enter both email and password");
+      return;
+    }
+
+    try {
+      await dispatch(login({ email, password })).unwrap();
+      setEmail("");
+      setPassword("");
+      toast.success("Login successful!");
+      // Refresh profile after login
+      dispatch(fetchProfile());
+    } catch (err: unknown) {
+      const errorMessage =
+        typeof err === "string" ? err : err instanceof Error ? err.message : "Login failed";
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="flex min-h-screen max-w-full bg-white font-sans flex-col ">
@@ -62,36 +85,56 @@ export default function Home() {
               to providing expert care and personalized treatment plans.
             </h3>
 
-            {/* Sign-In Form START */}
-            <form className="w-full max-w-md   px-8 py-8 rounded-lg  mt-8 flex flex-col gap-4">
-              <div className="relative">
-                <Mail className="absolute left-3 top-2.5 text-[#09879a] w-5 h-5" />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="pl-10 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-[#09879a] w-full transition"
-                  required
+            {/* Sign-In Form START - Only show if user is not logged in */}
+            {!user ? (
+              <form onSubmit={handleSubmit} className="w-full max-w-md px-8 py-8 rounded-lg mt-8 flex flex-col gap-4">
+                <div className="relative">
+                  <Mail className="absolute left-3 top-2.5 text-[#09879a] w-5 h-5" />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-[#09879a] w-full transition"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-2.5 text-[#09879a] w-5 h-5" />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-[#09879a] w-full transition"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-[#09879a] text-white font-bold py-2 rounded hover:bg-[#066172] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? "Signing in..." : "Sign In"}
+                </button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Don&apos;t have an account? <Link href="/signup" className="text-[#09879a] underline">Sign Up</Link>
+                </p>
+              </form>
+            ) : (
+              <div className="w-full max-w-md mt-8">
+                <Image
+                  src="/images/main3.png"
+                  alt="Main Image"
+                  width={500}
+                  height={500}
+                  className=" h-auto object-cover mx-auto md:w-[500px] md:h-auto sm:w-[450px] w-[290px]"
+                  priority
                 />
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-2.5 text-[#09879a] w-5 h-5" />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="pl-10 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-[#09879a] w-full transition"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-[#09879a] text-white font-bold py-2 rounded hover:bg-[#066172] transition"
-              >
-                Sign In
-              </button>
-              <p className="text-xs text-gray-500 mt-2">
-                Don&apos;t have an account? <Link href="/signup" className="text-[#09879a] underline">Sign Up</Link>
-              </p>
-            </form>
+            )}
             {/* Sign-In Form END */}
           </div>
         </div>

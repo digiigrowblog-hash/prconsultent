@@ -44,3 +44,10 @@ export async function updateProfileAPI(data: Partial<Omit<User, 'id' | 'email'>>
   const response = await axios.patch(`${API_BASE_URL}/updateprofile`, data, { withCredentials: true });
   return response.data.profile;
 }
+
+export async function getAllProfilesAPI(): Promise<User[]> {
+  console.log("Fetching all profiles from API");
+  const response = await axios.get(`${API_BASE_URL}/getallprofiles`, { withCredentials: true });
+  console.log("All Profiles Response:", response);
+  return response.data.profiles;
+}

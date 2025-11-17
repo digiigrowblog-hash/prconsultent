@@ -8,18 +8,25 @@ import {
   fetchProfileAPI,
   updateProfileAPI,
   User,
+  getAllProfilesAPI,
 } from './authAPI';
 
 interface AuthState {
   user: User | null;
+  userList: User[];          // New state for storing all profiles
   loading: boolean;
+  loadingProfiles: boolean;  // separate loading state for getAllProfiles
   error: string | null;
+  profilesError: string | null; // separate error for getAllProfiles
 }
 
 const initialState: AuthState = {
   user: null,
+  userList: [],
   loading: false,
+  loadingProfiles: false,
   error: null,
+  profilesError: null,
 };
 
 function getErrorMessage(error: unknown): string {
@@ -87,12 +94,31 @@ export const updateProfile = createAsyncThunk<User, Parameters<typeof updateProf
   }
 );
 
+export const getAllProfiles = createAsyncThunk<User[], void, { rejectValue: string }>(
+  'auth/getAllProfiles',
+  async (_, { rejectWithValue }) => {
+    try {
+      const profiles = await getAllProfilesAPI();
+      return profiles;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data?.error || error.message);
+      }
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Unknown error occurred');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     clearError(state) {
       state.error = null;
+      state.profilesError = null;
     },
     setUser(state, action: PayloadAction<User | null>) {
       state.user = action.payload;
@@ -155,6 +181,18 @@ const authSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? 'Update profile failed';
+      })
+      .addCase(getAllProfiles.pending, (state) => {
+        state.loadingProfiles = true;
+        state.profilesError = null;
+      })
+      .addCase(getAllProfiles.fulfilled, (state, action) => {
+        state.loadingProfiles = false;
+        state.userList = action.payload;
+      })
+      .addCase(getAllProfiles.rejected, (state, action) => {
+        state.loadingProfiles = false;
+        state.profilesError = action.payload ?? 'Failed to fetch profiles';
       });
   },
 });
