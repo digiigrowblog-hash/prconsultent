@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
   try {
     // Fetch all users from the database
     const users = await BaseUser.find();
-    return NextResponse.json({ users }, { status: 200 });
+    return NextResponse.json({ profiles: users }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
   }
-}
+};

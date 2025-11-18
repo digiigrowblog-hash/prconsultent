@@ -10,7 +10,7 @@ export interface User {
   phone?: string | null;
   specialization?: string | null;
   experience?: number | null;
-}
+};
 
 export async function signupAPI(data: {
   fullname: string;
@@ -46,8 +46,6 @@ export async function updateProfileAPI(data: Partial<Omit<User, 'id' | 'email'>>
 }
 
 export async function getAllProfilesAPI(): Promise<User[]> {
-  console.log("Fetching all profiles from API");
   const response = await axios.get(`${API_BASE_URL}/getallprofiles`, { withCredentials: true });
-  console.log("All Profiles Response:", response);
   return response.data.profiles;
 }

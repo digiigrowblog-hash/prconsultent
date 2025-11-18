@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       age: ageNumber,
       disease: disease.trim(),
       summary: summary?.trim() || '',
+      phone: phone?.trim() || '',
       image: image || '',
       isVisited: false,
     });

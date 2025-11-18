@@ -1,33 +1,39 @@
-// models/Notification.js
 import mongoose from 'mongoose';
 
 const notificationSchema = new mongoose.Schema({
   to: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'BaseUser',   // anyone (clinic/professional/admin) can be target
-    required: true
+    ref: 'BaseUser',
+    required: true,
   },
   from: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'BaseUser'
+    ref: 'BaseUser',
   },
   referral: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Referral'
+    ref: 'Referral',
   },
   type: {
     type: String,
     enum: ['referral', 'referral-response', 'info'],
-    required: true
+    required: true,
   },
   message: {
     type: String,
-    default: ''
+    default: '',
   },
   read: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
+  patientInfo: {
+    name: { type: String, default: '' },
+    age: { type: Number },
+    disease: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    // Add other patient fields as necessary
+  },
 }, { timestamps: true });
 
 notificationSchema.index({ to: 1, read: 1, createdAt: -1 });

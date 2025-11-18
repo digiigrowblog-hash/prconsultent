@@ -3,36 +3,39 @@ import mongoose from 'mongoose';
 const patientSchema = new mongoose.Schema({
   clinicDoctorId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',                      // <-- use 'User' (or 'BaseUser') if you used discriminators
-    required: [true, 'Clinic doctor id is required']
+    ref: 'BaseUser',
+    required: [true, 'Clinic doctor id is required'],
   },
   clinicDoctorName: {
     type: String,
-    required: [true, 'Clinic doctor name is required']
+    required: [true, 'Clinic doctor name is required'],
   },
   name: {
     type: String,
-    required: [true, 'Provide the name of the patient']
+    required: [true, 'Provide the name of the patient'],
   },
   age: {
     type: Number,
-    required: [true, 'Provide the age']
+    required: [true, 'Provide the age'],
   },
   summary: {
     type: String,
-    default: ''
+    default: '',
+  },
+  phone:{
+    type: String,
   },
   disease: {
     type: String,
-    required: [true, 'Provide the disease']
+    required: [true, 'Provide the disease'],
   },
   image: {
     type: String,
-    default: ''
+    default: '',  // store URL or base64 string of image
   },
   isVisited: {
     type: Boolean,
-    default: false
+    default: false,
   }
 }, { timestamps: true });
 
