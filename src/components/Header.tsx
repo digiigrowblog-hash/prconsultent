@@ -455,7 +455,7 @@ export default function Header({ user: userProp }: HeaderProps) {
 
               {user && (user.role === "admin" || user.role === "clinicdoctor") && (
                 <Link
-                  href="/doctorInfo"
+                  href="/doctorinfo"
                   className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/doctorInfo" ? "text-[#00a0a8]" : "text-gray-700"
                     } hover:text-[#00a0a8]`}
                   onClick={() => setMobileMenuOpen(false)}
