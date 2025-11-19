@@ -10,24 +10,20 @@ import NotificationsTables from "./(dashboardComponents)/Notifications";
 
 const panels = [
   {
-    label: "User Management",
-    icon: <Users className="w-6 h-6 " />,
-    text: "Shows the users table. Here, admin can manage users.",
+    label: "Doctor Profiles",
+    icon: <Users className="w-6 h-6 " />,   
   },
   {
     label: "Patient",
-    icon: <Users2Icon className="w-6 h-6 " />,
-    text: "Shows appointment management. View and manage patient appointments.",
+    icon: <Users2Icon className="w-6 h-6 " />,  
   },
   {
     label: "Referrals",
-    icon: <FileText className="w-6 h-6 " />,
-    text: "Shows referral management. View and manage patient referrals.",
+    icon: <FileText className="w-6 h-6 " />,   
   },
   {
     label: "Notifications",
     icon: <Bell className="w-6 h-6 " />,
-    text: "Shows system notifications for the admin.",
   },
  
 ];
@@ -85,9 +81,9 @@ export default function Dashboard() {
         </div>
 
         {/* Details panel */}
-        <div className="bg-[#f4fafc] p-6 rounded-lg border border-[#e0eaf1] text-base text-gray-700 min-h-full">
+        {/* <div className="bg-[#f4fafc] p-6 rounded-lg border border-[#e0eaf1] text-base text-gray-700 min-h-full">
           {panels[selected].text}
-        </div>
+        </div> */}
 
         {/* Conditional table rendering */}
         <div className="mt-6">{renderTable()}</div>

@@ -17,7 +17,7 @@ export function SearchByName({ value, onChange, placeholder = "Search by name...
       placeholder={placeholder}
       className="mb-4 px-3 py-2 rounded border border-[#00a0a8] focus:ring-2 focus:ring-[#09879a] outline-none w-full max-w-sm text-base"
     />
-    <Search/>
+    <Search className="w-7 h-7 mt-1"/>
   </div>
    
   );
