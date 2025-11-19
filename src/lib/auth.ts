@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 
 const COOKIE_NAME = process.env.COOKIE_NAME;
-const JWT_SECRET = process.env.JWT_SECRET || process.env.ACCESS_TOKEN_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Type guard to check if req is NextRequest
 function isNextRequest(req: Request | NextRequest): req is NextRequest {
