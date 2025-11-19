@@ -3,6 +3,11 @@
 import { useState } from "react";
 import { Users, Bell, FileText, Users2Icon } from "lucide-react";
 import Header from "@/components/Header";
+import DoctorsTables from "./(dashboardComponents)/DoctorsTables";
+import PatientsTables from "./(dashboardComponents)/PatientsTables";
+import ReferralsTables from "./(dashboardComponents)/Referrence";
+import NotificationsTables from "./(dashboardComponents)/Notifications";
+
 
 const panels = [
   {
@@ -36,9 +41,7 @@ export default function Dashboard() {
       <Header/>
       <div>
         <div className="w-full   rounded-xl py-10 px-6 relative mt-16">
-          {/* Decorative ellipse */}
-          {/* <div className="absolute top-0 right-0 w-24 h-24 bg-[#00a0a8] opacity-30 rounded-full translate-x-1/4 -translate-y-1/4 pointer-events-none" /> */}
-
+         
           <div className="flex items-center gap-3 mb-8">
             <FileText className="w-8 h-8 text-[#00a0a8]" />
             <h1 className="text-lg md:text-3xl font-bold text-[#09879a]">Welcome to Admin Dashboard</h1>
