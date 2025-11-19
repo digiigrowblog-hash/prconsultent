@@ -1,11 +1,11 @@
 import { NextResponse, NextRequest } from 'next/server';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Db } from '../../../../lib/db';
-import BaseUser from '../../../../models/baseUser';
-import ClinicDoctor from '../../../../models/clinicDoctor';
-import ProfessionalDoctor from '../../../../models/professionalDoctor';
-import Admin from '../../../../models/admin';
+import { Db } from '@/lib/db';
+import BaseUser from '@/models/baseUser';
+import ClinicDoctor from '@/models/clinicDoctor';
+import ProfessionalDoctor from '@/models/ProfessionalDoctor';
+import Admin from '@/models/admin';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'prref_token';
