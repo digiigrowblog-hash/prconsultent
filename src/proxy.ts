@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const cookieName = process.env.COOKIE_NAME || 'prref_token';
 
 const publicRoutes = ["/", "/signin", "/signup"];
-const protectedRoutes = ["/doctorInfo", "/notification"];
+const protectedRoutes = ["/doctorinfo", "/notification"];
 const adminRoutes = ["/dashboard"]; // Only for admin
 
 export default async function middleware(request: NextRequest) {
