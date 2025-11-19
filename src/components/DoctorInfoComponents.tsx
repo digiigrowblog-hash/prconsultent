@@ -64,6 +64,7 @@ export default function DoctorInfo({
           alt={`${name} photo`}
           width={180}
           height={180}
+          loading="eager"
           className="rounded-lg object-cover shadow-md w-44 h-44 "
         />
         <div className="w-full mt-2 space-y-2">
