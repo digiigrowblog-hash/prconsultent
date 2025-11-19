@@ -12,3 +12,7 @@ export async function markNotificationRead(notificationId: string): Promise<Noti
   const response = await axios.patch(`${API_BASE_URL}`, { notificationId }, { withCredentials: true });
   return response.data.notification;
 }
+
+export async function clearAllNotificationsAPI(): Promise<void> {
+  await axios.post(`${API_BASE_URL}`, null, { withCredentials: true });
+}

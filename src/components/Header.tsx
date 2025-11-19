@@ -10,10 +10,10 @@ import { toast } from "react-hot-toast";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import type { RootState } from "@/store/store";
+import { fetchNotifications } from "@/feature/notification/notificationSlice";
 
-// Props type - make user optional or nullable because you show login/signup if no user
 interface HeaderProps {
-  user?: any | null; // Keep for backward compatibility, but we'll use Redux
+  user?: any | null;
 }
 
 interface EditFormData {
@@ -33,14 +33,14 @@ export default function Header({ user: userProp }: HeaderProps) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
 
-
-
-  // Get user from Redux store (preferred) or fallback to prop
   const reduxUser = useAppSelector((state: RootState) => state.auth.user);
   const user = reduxUser || userProp;
   const { loading: authLoading } = useAppSelector((state: RootState) => state.auth);
 
-  // Initialize form data from user
+  // Get unread notification count
+  const { notifications } = useAppSelector((state: RootState) => state.notification);
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   const [formData, setFormData] = useState<EditFormData>({
     fullname: user?.fullname || "",
     phone: user?.phone || "",
@@ -48,7 +48,12 @@ export default function Header({ user: userProp }: HeaderProps) {
     experience: user?.experience ?? null,
   });
 
-  // Update form data when user changes
+  useEffect(() => {
+  if (user) {
+    dispatch(fetchNotifications());
+  }
+}, [user, dispatch]);
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -60,28 +65,24 @@ export default function Header({ user: userProp }: HeaderProps) {
     }
   }, [user]);
 
-
   useEffect(() => {
     function handleResize() {
-      setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint at 768px
+      setIsMobile(window.innerWidth < 768);
     }
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Close popup on outside click - but not when in edit mode
   useEffect(() => {
     function handleClick(event: MouseEvent) {
       const target = event.target as Node;
-      // Don't close if clicking inside the popup or if in edit mode
       if (profileRef.current && !profileRef.current.contains(target)) {
         if (!isEditMode) {
           setShowProfile(false);
         }
       }
     }
-    // Only add listener when popup is shown and not in edit mode
     if (showProfile && !isEditMode) {
       window.addEventListener("mousedown", handleClick);
       return () => {
@@ -90,20 +91,16 @@ export default function Header({ user: userProp }: HeaderProps) {
     }
   }, [showProfile, isEditMode]);
 
-  // Handle edit mode toggle
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     setIsEditMode(true);
-    // Prevent the popup from closing
     setShowProfile(true);
   };
 
-  // Handle cancel edit
   const handleCancelEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditMode(false);
-    // Reset form data to original user data
     if (user) {
       setFormData({
         fullname: user.fullname || "",
@@ -114,7 +111,6 @@ export default function Header({ user: userProp }: HeaderProps) {
     }
   };
 
-  // Handle form input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -123,7 +119,6 @@ export default function Header({ user: userProp }: HeaderProps) {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -153,22 +148,19 @@ export default function Header({ user: userProp }: HeaderProps) {
     try {
       await dispatch(logout()).unwrap();
       toast.success("Logged out successfully");
-      router.push("/signin");
+      router.push("/");
     } catch (err) {
       console.error("Logout error:", err);
       toast.error("Logout failed. Try again.");
     }
   }
 
-  // Mobile menu toggle state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close mobile menu on navigation change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Mobile menu animation variants
   const menuVariants = {
     hidden: { opacity: 0, height: 0, transition: { duration: 0.2, ease: "easeInOut" } },
     visible: { opacity: 1, height: "auto", transition: { duration: 0.3, ease: "easeInOut" } },
@@ -200,13 +192,22 @@ export default function Header({ user: userProp }: HeaderProps) {
           </Link>
         )}
 
-        {user && (
+        {user && user.role=== "admin" ?(
+          <Link href="/dashboard"
+            className={`${pathname === "/dashboard" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block relative`}
+          >Dashboard
+          </Link>
+        ): (
           <Link
             href="/notification"
-            className={`${pathname === "/notification" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"}
-             hover:text-[#00a0a8] hidden md:block`}
+            className={`${pathname === "/notification" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block relative`}
           >
             <BellRing className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <div className="absolute -top-2 -right-2 min-w-[22px] h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold px-1 shadow-md">
+                {unreadCount}
+              </div>
+            )}
           </Link>
         )}
 
@@ -462,15 +463,31 @@ export default function Header({ user: userProp }: HeaderProps) {
                   DoctorInfo
                 </Link>
               )}
+              {
+                user && user.role === "admin" &&(
+                  <Link
+                  href="/dashboard"
+                  className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/dahsboard" ? "text-[#00a0a8]" : "text-gray-700"
+                    } hover:text-[#00a0a8] relative`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >Dashboard</Link>
 
-              {user && (
+                )
+              }
+
+              {user && (user.role === "professionaldoctor" || user.role === "clinicdoctor") && (
                 <Link
                   href="/notification"
                   className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/notification" ? "text-[#00a0a8]" : "text-gray-700"
-                    } hover:text-[#00a0a8]`}
+                    } hover:text-[#00a0a8] relative`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Notification
+                  {unreadCount > 0 && (
+                    <span className="ml-2 inline-flex items-center rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">
+                      {unreadCount}
+                    </span>
+                  )}
                 </Link>
               )}
 

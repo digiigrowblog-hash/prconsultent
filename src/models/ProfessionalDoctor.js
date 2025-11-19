@@ -4,11 +4,11 @@ import mongoose from 'mongoose';
 const professionalDoctorSchema = new mongoose.Schema({
   phone: {
     type: String,
-    required: [true, 'Provide the phone number'],
+    
   },
   specialization: {
     type: String,
-    required: [true, 'Provide the specialization'],
+    
   },
   experience: {
     type: Number,

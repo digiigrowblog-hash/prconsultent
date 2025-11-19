@@ -153,7 +153,35 @@ export async function PATCH(request: NextRequest) {
     referral.respondedBy = decoded.id;
     referral.respondedAt = new Date();
 
+    // After referral.status update and save
     await referral.save();
+
+    const patient = await Patient.findById(referral.patient);
+    const professionalDoctor = await BaseUser.findById(referral.professionalDoctor);
+
+    const clinicDoctorId = referral.clinicDoctor;
+
+    const actionMessage =
+      referral.status === "passed"
+        ? `Your referred patient ${patient?.name || ''} ${patient.phone|| ''}  has confirmed the appointment and visited the ${professionalDoctor.fullname} doctor.`
+        : `Your referred patient  ${patient?.name || ''} ${patient.phone|| ''} did not attend the appointment (cancelled) by  ${professionalDoctor.fullname} doctor.`;
+
+    await NotificationModel.create({
+      to: clinicDoctorId,
+      from: referral.professionalDoctor,
+      type: 'referral-response',
+      message: actionMessage,
+      referral: referral._id,
+      read: false,
+      patientInfo: {
+        name: patient?.name || '',
+        age: patient?.age || null,
+        disease: patient?.disease || '',
+        phone: patient?.phone || '',
+      },
+      createdAt: new Date(),
+    });
+
 
     // Optionally: Update patient.isVisited if referral confirmed
     if (status === 'confirmed') {

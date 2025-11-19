@@ -235,7 +235,7 @@ export default function DoctorInfoPage() {
   const doctors = [
     {
       image: "/images/drRahul.png",
-      name: doctor[0]?.fullname || "Dr. Rahul R Gupta",
+      name: doctor[0]?.fullname || "Dr. Rahul gupta",
       age: 45,
       experience: `${doctor[0]?.experience}+`,
       contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },

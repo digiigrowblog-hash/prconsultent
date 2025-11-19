@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { signup, clearError } from "@/feature/auth/authSlice"; // Adjust path
-import type { RootState , AppDispatch} from "@/store/store"; // Adjust path
+import type { RootState, AppDispatch } from "@/store/store"; // Adjust path
 import type { TypedUseSelectorHook } from 'react-redux'
+
+
 type RoleType = "admin" | "clinicdoctor" | "professionaldoctor" | "";
 
 const useAppDispatch = () => useDispatch<AppDispatch>()
@@ -23,9 +25,10 @@ export default function Signup() {
   const [phone, setPhone] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [experience, setExperience] = useState<number | "">("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
- const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch()
 
   // Get auth state from Redux
   const { loading, error, user } = useSelector((state: RootState) => state.auth);
@@ -46,45 +49,45 @@ export default function Signup() {
     }
   }, [error, dispatch]);
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  if (!(username && email && password && role)) {
-    toast.error("Please fill all the mandatory fields");
-    return;
-  }
-
-  try {
-    await dispatch(
-      signup({
-        fullname: username,
-        email,
-        password,
-        role,
-        ...(phone.trim() ? { phone: phone.trim() } : {}),
-        ...(specialization.trim() ? { specialization: specialization.trim() } : {}),
-        ...(experience !== "" && experience >= 0 ? { experience } : {}),
-      })
-    ).unwrap();
-
-    // Clear fields on success
-    setUsername("");
-    setEmail("");
-    setPassword("");
-    setRole("");
-    setPhone("");
-    setSpecialization("");
-    setExperience("");
-
-    router.push("/signin");
-  } catch (err: unknown) {
-    if (typeof err === "string") {
-      toast.error(err);
-    } else {
-      toast.error("Signup failed");
+    if (!(username && email && password && role)) {
+      toast.error("Please fill all the mandatory fields");
+      return;
     }
-  }
-};
+
+    try {
+      await dispatch(
+        signup({
+          fullname: username,
+          email,
+          password,
+          role,
+          ...(phone.trim() ? { phone: phone.trim() } : {}),
+          ...(specialization.trim() ? { specialization: specialization.trim() } : {}),
+          ...(experience !== "" && experience >= 0 ? { experience } : {}),
+        })
+      ).unwrap();
+
+      // Clear fields on success
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setRole("");
+      setPhone("");
+      setSpecialization("");
+      setExperience("");
+
+      router.push("/signin");
+    } catch (err: unknown) {
+      if (typeof err === "string") {
+        toast.error(err);
+      } else {
+        toast.error("Signup failed");
+      }
+    }
+  };
 
 
 
@@ -134,22 +137,33 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             required
             disabled={loading}
           />
-        </div>
-        <div>
+        </div >
+        <div className="relative">
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
             Password*
           </label>
           <input
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md 
+            focus:ring-2 focus:ring-blue-500 focus:border-transparent  pr-10"
             required
             disabled={loading}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-[68%] transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+            tabIndex={0}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
         </div>
+
 
         <div>
           <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">

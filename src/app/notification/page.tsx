@@ -7,17 +7,22 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { RootState } from "@/store/store";
-import { fetchNotifications, markReadNotification } from "../../feature/notification/notificationSlice";
+import {
+  fetchNotifications,
+  markReadNotification,
+  removeNotification,
+  clearAllNotifications, // Assume added in your slice
+} from "../../feature/notification/notificationSlice";
 import { updateReferral } from "@/feature/referral/referralSlice";
-
 
 export default function NotificationPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user, loading } = useAppSelector((state: RootState) => state.auth);
-  const { notifications, loading: notifsLoading } = useAppSelector((state: RootState) => state.notification);
+  const { notifications, loading: notifsLoading } = useAppSelector(
+    (state: RootState) => state.notification
+  );
 
-  
   const [selectedNotif, setSelectedNotif] = useState<any | null>(null);
   const [actionDone, setActionDone] = useState(false);
 
@@ -33,7 +38,7 @@ export default function NotificationPage() {
     }
   }, [user, dispatch]);
 
-   useEffect(() => {
+  useEffect(() => {
     setActionDone(false);
   }, [selectedNotif]);
 
@@ -50,6 +55,8 @@ export default function NotificationPage() {
     );
   }
 
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   const handleDismiss = (id: string) => {
     dispatch(markReadNotification(id));
   };
@@ -57,14 +64,10 @@ export default function NotificationPage() {
   const handleAccept = async () => {
     if (!selectedNotif) return;
     try {
-      // Call your updateReferral API with status 'passed' or 'confirmed'
-      await dispatch(updateReferral({ referralId: selectedNotif.referral, status: 'passed' })).unwrap();
-
-      // Update notification read status via API (example PATCH)
+      await dispatch(updateReferral({ referralId: selectedNotif.referral, status: "passed" })).unwrap();
       await dispatch(markReadNotification(selectedNotif._id)).unwrap();
-
-      // Update local UI disabled state
-      setActionDone(true);
+      dispatch(removeNotification(selectedNotif._id));
+      setSelectedNotif(null);
     } catch (error) {
       console.error("Accept referral error:", error);
     }
@@ -73,18 +76,23 @@ export default function NotificationPage() {
   const handleCancel = async () => {
     if (!selectedNotif) return;
     try {
-      // Call your updateReferral API with status 'cancelled'
-      await dispatch(updateReferral({ referralId: selectedNotif.referral, status: 'cancelled' })).unwrap();
-
-      // Update notification read status via API
+      await dispatch(updateReferral({ referralId: selectedNotif.referral, status: "cancelled" })).unwrap();
       await dispatch(markReadNotification(selectedNotif._id)).unwrap();
-
-      setActionDone(true);
+      dispatch(removeNotification(selectedNotif._id));
+      setSelectedNotif(null);
     } catch (error) {
       console.error("Cancel referral error:", error);
     }
   };
 
+  const handleClearAll = async () => {
+    try {
+      await dispatch(clearAllNotifications()).unwrap();
+      setSelectedNotif(null);
+    } catch (error) {
+      console.error("Clear all notifications error:", error);
+    }
+  };
 
   const iconMap = {
     referral: <Bell size={24} className="text-cyan-600" />,
@@ -101,20 +109,36 @@ export default function NotificationPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="flex items-center gap-3 text-2xl font-bold text-[#09879a] mb-8 mt-10 md:mt-20"
+          className="flex items-center gap-3 text-2xl font-bold text-[#09879a] mb-4 mt-10 md:mt-20"
         >
           <Bell size={32} className="text-cyan-500" />
           Notifications
         </motion.h1>
 
+        {/* Clear All Notifications button for clinic doctor if unread exist */}
+        {user?.role === "clinicdoctor" && unreadCount > 0 && (
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={handleClearAll}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+              aria-label="Clear all notifications"
+              type="button"
+            >
+              Clear All Notifications ({unreadCount})
+            </button>
+          </div>
+        )}
+
         <div className="space-y-5">
           {notifsLoading ? (
-            Array(3).fill(0).map((_, idx) => (
-              <div
-                key={idx}
-                className="w-full rounded-lg shadow bg-gray-100 flex items-center gap-4 px-4 py-5 border-l-4 border-gray-300 animate-pulse h-20"
-              />
-            ))
+            Array(3)
+              .fill(0)
+              .map((_, idx) => (
+                <div
+                  key={idx}
+                  className="w-full rounded-lg shadow bg-gray-100 flex items-center gap-4 px-4 py-5 border-l-4 border-gray-300 animate-pulse h-20"
+                />
+              ))
           ) : notifications.length === 0 ? (
             <p className="text-center text-gray-500 text-lg mt-10">No notifications</p>
           ) : (
@@ -128,16 +152,17 @@ export default function NotificationPage() {
                   initial={{ opacity: 0, translateY: 15 }}
                   animate={{ opacity: 1, translateY: 0 }}
                   transition={{ duration: 0.4, delay: idx * 0.05 }}
-                  className={`w-full rounded-lg shadow bg-white flex items-start gap-4 px-4 py-5 border-l-4 cursor-pointer ${notif.type === "referral-response"
+                  className={`w-full rounded-lg shadow bg-white flex items-start gap-4 px-4 py-5 border-l-4 cursor-pointer ${
+                    notif.type === "referral-response"
                       ? "border-green-400 shadow-green-100"
                       : notif.type === "referral"
-                        ? "border-cyan-400 shadow-cyan-100"
-                        : notif.type === "info"
-                          ? "border-blue-400 shadow-blue-100"
-                          : notif.type === "warning"
-                            ? "border-yellow-300 shadow-yellow-100"
-                            : "border-gray-200"
-                    }`}
+                      ? "border-cyan-400 shadow-cyan-100"
+                      : notif.type === "info"
+                      ? "border-blue-400 shadow-blue-100"
+                      : notif.type === "warning"
+                      ? "border-yellow-300 shadow-yellow-100"
+                      : "border-gray-200"
+                  }`}
                   onClick={() => setSelectedNotif(notif)}
                 >
                   <div className="shrink-0">{icon}</div>
@@ -145,16 +170,6 @@ export default function NotificationPage() {
                     <div className="text-base font-semibold text-gray-800">{notif.message || "Notification"}</div>
                     <div className="text-xs text-gray-400 mt-1">{notifTime}</div>
                   </div>
-                  <button
-                    title="Dismiss"
-                    className="ml-2 text-gray-400 hover:text-gray-600 transition"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDismiss(notif._id);
-                    }}
-                  >
-                    <X size={20} />
-                  </button>
                 </motion.div>
               );
             })
@@ -194,21 +209,22 @@ export default function NotificationPage() {
                 <button
                   onClick={handleCancel}
                   disabled={actionDone}
-                  className={`px-5 py-2 rounded border border-gray-400 hover:bg-gray-100 transition w-full sm:w-auto ${actionDone ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                  className={`px-5 py-2 rounded border border-gray-400 hover:bg-gray-100 transition w-full sm:w-auto ${
+                    actionDone ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAccept}
                   disabled={actionDone}
-                  className={`px-5 py-2 rounded bg-[#09879a] text-white font-semibold hover:bg-[#066172] transition w-full sm:w-auto ${actionDone ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
+                  className={`px-5 py-2 rounded bg-[#09879a] text-white font-semibold hover:bg-[#066172] transition w-full sm:w-auto ${
+                    actionDone ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   Accept
                 </button>
               </div>
-
             </motion.div>
           </div>
         )}

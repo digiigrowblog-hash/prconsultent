@@ -1,6 +1,6 @@
 "use client";
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getNotifications, markNotificationRead } from './notificationAPI';
+import { getNotifications, markNotificationRead ,clearAllNotificationsAPI  } from './notificationAPI';
 import type { Notification } from '@/type';
 
 interface NotificationState {
@@ -39,6 +39,18 @@ export const markReadNotification = createAsyncThunk<Notification, string, { rej
   }
 );
 
+export const clearAllNotifications = createAsyncThunk<void, void, { rejectValue: string }>(
+  'notification/clearAllNotifications',
+  async (_, { rejectWithValue }) => {
+    try {
+      // Call your backend API to mark all user's notifications as read
+      await clearAllNotificationsAPI();
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Failed to clear notifications');
+    }
+  }
+);
+
 const notificationSlice = createSlice({
   name: 'notification',
   initialState,
@@ -48,6 +60,13 @@ const notificationSlice = createSlice({
     },
     clearError(state) {
       state.error = null;
+    },
+    removeNotification(state, action: PayloadAction<string>) {
+      state.notifications = state.notifications.filter(n => n._id !== action.payload);
+    },
+    clearNotifications(state) {
+      // Locally clear notifications from state after successful API call
+      state.notifications = [];
     },
   },
   extraReducers: (builder) => {
@@ -78,9 +97,23 @@ const notificationSlice = createSlice({
       .addCase(markReadNotification.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? 'Failed to mark notification as read';
-      });
+      }),
+      builder.addCase(clearAllNotifications.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(clearAllNotifications.fulfilled, (state) => {
+      state.loading = false;
+      // Clear notifications locally on success
+      state.notifications = [];
+    });
+    builder.addCase(clearAllNotifications.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload ?? 'Failed to clear notifications';
+    });
   },
 });
 
-export const { selectNotification, clearError } = notificationSlice.actions;
+export const { selectNotification, clearError, removeNotification, clearNotifications } = notificationSlice.actions;
 export default notificationSlice.reducer;
+

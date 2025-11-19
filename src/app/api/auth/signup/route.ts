@@ -60,22 +60,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Role specific validations
-    if (role === 'clinicdoctor' || role === 'professionaldoctor') {
-      if (!phone) {
-        return NextResponse.json(
-          { error: 'Phone number is required for clinicdoctor and professionaldoctor roles' },
-          { status: 400 }
-        );
-      }
-      if (!specialization) {
-        return NextResponse.json(
-          { error: 'Specialization is required for clinicdoctor and professionaldoctor roles' },
-          { status: 400 }
-        );
-      }
-    }
-
     const passwordHash = await bcrypt.hash(password, 10);
 
     let userDoc;

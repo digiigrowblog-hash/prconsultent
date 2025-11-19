@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import BaseUser from './baseUser.js';
 
 const clinicDoctorSchema = new mongoose.Schema({
-  phone: { type: String, required: true },
-  specialization: { type: String, required: true },
+  phone: { type: String,  },
+  specialization: { type: String,  },
   experience: { type: Number, default: null },
 });
 

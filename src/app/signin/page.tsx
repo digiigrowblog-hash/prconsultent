@@ -1,25 +1,24 @@
 "use client";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { login, clearError } from "@/feature/auth/authSlice"; 
-import type { TypedUseSelectorHook } from 'react-redux'
-import type { RootState, AppDispatch } from '@/store/store'
+import { login, clearError } from "@/feature/auth/authSlice";
+import type { TypedUseSelectorHook } from "react-redux";
+import type { RootState, AppDispatch } from "@/store/store";
 
-const useAppDispatch = () => useDispatch<AppDispatch>()
-const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
-
+const useAppDispatch = () => useDispatch<AppDispatch>();
+const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); 
   const router = useRouter();
-const dispatch = useAppDispatch()
-
+  const dispatch = useAppDispatch();
 
   const { loading, error } = useSelector((state: RootState) => state.auth);
 
@@ -43,11 +42,14 @@ const dispatch = useAppDispatch()
       setEmail("");
       setPassword("");
       toast.success("Login successful! Redirecting...");
-      // Redirect immediately after successful login
       router.push("/");
     } catch (err: unknown) {
       const errorMessage =
-        typeof err === "string" ? err : err instanceof Error ? err.message : "Login failed";
+        typeof err === "string"
+          ? err
+          : err instanceof Error
+          ? err.message
+          : "Login failed";
       toast.error(errorMessage);
     }
   };
@@ -88,16 +90,27 @@ const dispatch = useAppDispatch()
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
             Password
           </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-            disabled={loading}
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10" // Add padding for icon space
+              required
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+              tabIndex={0}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </div>
 
         <button
@@ -111,7 +124,10 @@ const dispatch = useAppDispatch()
 
       <p className="mt-8 text-center text-sm text-gray-400">
         Not a member?{" "}
-        <Link href="/signup" className="font-medium text-blue-400 hover:text-blue-500 flex items-center justify-center gap-1">
+        <Link
+          href="/signup"
+          className="font-medium text-blue-400 hover:text-blue-500 flex items-center justify-center gap-1"
+        >
           Sign up now <ArrowRight className="inline h-4 w-4" />
         </Link>
       </p>

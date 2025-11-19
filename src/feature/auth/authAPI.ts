@@ -36,7 +36,6 @@ export async function logoutAPI(): Promise<void> {
 
 export async function fetchProfileAPI(): Promise<User> {
   const response = await axios.get(`${API_BASE_URL}/getprofile`, { withCredentials: true }); 
-  console.log(response.data.profile)
   return  response.data.profile
 }
 
