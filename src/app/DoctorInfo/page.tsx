@@ -196,7 +196,7 @@ export default function DoctorInfoPage() {
       await dispatch(
         addReferral({
           patientId,
-          professionalDoctorId: professionalDoctor._id || professionalDoctor.id,
+          professionalDoctorId:  professionalDoctor.id,
         })
       ).unwrap();
 

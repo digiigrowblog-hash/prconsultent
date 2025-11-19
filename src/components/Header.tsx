@@ -18,7 +18,7 @@ interface HeaderProps {
 
 interface EditFormData {
   fullname: string;
-  phone: string;
+  phone: string ;
   specialization: string;
   experience: number | null;
 }
@@ -129,8 +129,8 @@ export default function Header({ user: userProp }: HeaderProps) {
     try {
       const updateData: Partial<EditFormData> = {};
       if (formData.fullname !== user.fullname) updateData.fullname = formData.fullname;
-      if (formData.phone !== (user.phone || "")) updateData.phone = formData.phone || null;
-      if (formData.specialization !== (user.specialization || "")) updateData.specialization = formData.specialization || null;
+      if (formData.phone !== (user.phone || "")) updateData.phone = formData.phone || undefined;
+      if (formData.specialization !== (user.specialization || "")) updateData.specialization = formData.specialization || undefined;
       if (formData.experience !== (user.experience ?? null)) updateData.experience = formData.experience;
 
       await dispatch(updateProfile(updateData)).unwrap();

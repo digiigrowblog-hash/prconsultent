@@ -144,7 +144,7 @@ export default function NotificationPage() {
           ) : (
             notifications.map((notif, idx) => {
               const icon = iconMap[notif.type] || <Info size={24} className="text-gray-600" />;
-              const notifTime = new Date(notif.createdAt).toLocaleString();
+              const notifTime = new Date(notif.createdAt || "").toLocaleString();
 
               return (
                 <motion.div

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = String(email).trim().toLowerCase();
 
     // Find user in base collection, including all discriminator fields
-    const user = await BaseUser.findOne({ email: normalizedEmail }).lean();
+    const user = await BaseUser.findOne({ email: normalizedEmail }).lean() as (User | null);
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid credentials' },

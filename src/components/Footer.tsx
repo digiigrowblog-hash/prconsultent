@@ -23,10 +23,11 @@ const containerVariants = {
     transition: {
       staggerChildren: 0.1,
       duration: 0.8,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   },
 };
+
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
