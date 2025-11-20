@@ -196,3 +196,5 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Server error updating referral' }, { status: 500 });
   }
 }
+
+

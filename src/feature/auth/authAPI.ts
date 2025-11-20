@@ -48,3 +48,8 @@ export async function getAllProfilesAPI(): Promise<User[]> {
   const response = await axios.get(`${API_BASE_URL}/getallprofiles`, { withCredentials: true });
   return response.data.profiles;
 }
+
+export async function searchByNameAPI(name:string): Promise<User[]> {
+  const response =await axios.get(`${API_BASE_URL}/searchbyname?name=${name}`);
+  return response.data.users;
+}

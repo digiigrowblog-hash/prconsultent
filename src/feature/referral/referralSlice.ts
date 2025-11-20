@@ -54,7 +54,7 @@ export const updateReferral = createAsyncThunk<Referral, { referralId: string; s
 );
 
 const referralSlice = createSlice({
-  name: 'referral',
+  name: 'referrals',
   initialState,
   reducers: {
     selectReferral(state, action: PayloadAction<string | null>) {

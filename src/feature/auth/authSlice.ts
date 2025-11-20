@@ -9,24 +9,31 @@ import {
   updateProfileAPI,
   User,
   getAllProfilesAPI,
+  searchByNameAPI
 } from './authAPI';
 
 interface AuthState {
   user: User | null;
   userList: User[];          // New state for storing all profiles
+  searchResults: User[]; 
   loading: boolean;
   loadingProfiles: boolean;  // separate loading state for getAllProfiles
+   loadingSearch: boolean;
   error: string | null;
   profilesError: string | null; // separate error for getAllProfiles
+  searchError: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
   userList: [],
+  searchResults: [],                  
   loading: false,
   loadingProfiles: false,
+  loadingSearch: false,
   error: null,
   profilesError: null,
+  searchError: null,
 };
 
 function getErrorMessage(error: unknown): string {
@@ -112,6 +119,23 @@ export const getAllProfiles = createAsyncThunk<User[], void, { rejectValue: stri
   }
 );
 
+export const searchByName = createAsyncThunk<User[], string, { rejectValue: string }>(
+  'auth/searchByName',
+  async (name, { rejectWithValue }) => {
+    try {
+      return await searchByNameAPI(name);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data?.error || error.message);
+      }
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Unknown error occurred');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -119,6 +143,7 @@ const authSlice = createSlice({
     clearError(state) {
       state.error = null;
       state.profilesError = null;
+      state.searchError = null;  
     },
     setUser(state, action: PayloadAction<User | null>) {
       state.user = action.payload;
@@ -193,6 +218,18 @@ const authSlice = createSlice({
       .addCase(getAllProfiles.rejected, (state, action) => {
         state.loadingProfiles = false;
         state.profilesError = action.payload ?? 'Failed to fetch profiles';
+      })
+       .addCase(searchByName.pending, (state) => {
+        state.loadingSearch = true;
+        state.searchError = null;
+      })
+      .addCase(searchByName.fulfilled, (state, action) => {
+        state.loadingSearch = false;
+        state.searchResults = action.payload;
+      })
+      .addCase(searchByName.rejected, (state, action) => {
+        state.loadingSearch = false;
+        state.searchError = action.payload ?? 'Search failed';
       });
   },
 });

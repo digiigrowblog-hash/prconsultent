@@ -80,11 +80,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Details panel */}
-        {/* <div className="bg-[#f4fafc] p-6 rounded-lg border border-[#e0eaf1] text-base text-gray-700 min-h-full">
-          {panels[selected].text}
-        </div> */}
-
         {/* Conditional table rendering */}
         <div className="mt-6">{renderTable()}</div>
       </div>
