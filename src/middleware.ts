@@ -13,6 +13,7 @@ function safeBase64Decode(input: string) {
     if (typeof Buffer !== "undefined") {
       return Buffer.from(input, "base64").toString("utf-8");
     }
+    
 
     // Edge / browser: atob exists in most environments
     if (typeof atob === "function") {
