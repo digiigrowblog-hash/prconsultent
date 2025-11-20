@@ -15,10 +15,11 @@ import {
 interface AuthState {
   user: User | null;
   userList: User[];          // New state for storing all profiles
-  searchResults: User[]; 
+  searchResults: User[];
   loading: boolean;
   loadingProfiles: boolean;  // separate loading state for getAllProfiles
-   loadingSearch: boolean;
+  loadingSearch: boolean;
+  isInitialized: boolean;  // ADD THIS
   error: string | null;
   profilesError: string | null; // separate error for getAllProfiles
   searchError: string | null;
@@ -27,10 +28,11 @@ interface AuthState {
 const initialState: AuthState = {
   user: null,
   userList: [],
-  searchResults: [],                  
+  searchResults: [],
   loading: false,
   loadingProfiles: false,
   loadingSearch: false,
+  isInitialized: false,
   error: null,
   profilesError: null,
   searchError: null,
@@ -143,7 +145,7 @@ const authSlice = createSlice({
     clearError(state) {
       state.error = null;
       state.profilesError = null;
-      state.searchError = null;  
+      state.searchError = null;
     },
     setUser(state, action: PayloadAction<User | null>) {
       state.user = action.payload;
@@ -188,10 +190,12 @@ const authSlice = createSlice({
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
+        state.isInitialized = true;  // ADD THIS
         state.user = action.payload;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
+        state.isInitialized = true;  // ADD THIS - even if rejected, we checked
         state.error = action.payload ?? 'Fetching profile failed';
       })
 
@@ -219,7 +223,7 @@ const authSlice = createSlice({
         state.loadingProfiles = false;
         state.profilesError = action.payload ?? 'Failed to fetch profiles';
       })
-       .addCase(searchByName.pending, (state) => {
+      .addCase(searchByName.pending, (state) => {
         state.loadingSearch = true;
         state.searchError = null;
       })
