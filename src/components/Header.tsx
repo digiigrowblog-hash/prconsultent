@@ -186,10 +186,10 @@ export default function Header({ user: userProp }: HeaderProps) {
 
         {showAuthButtons && user && (user.role === "admin" || user.role === "clinicdoctor") && (
           <Link
-            href="/doctorinfo"
-            className={`${pathname === "/doctorinfo" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block`}
+            href="/doctorInfo"
+            className={`${pathname === "/doctorInfo" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block`}
           >
-            DoctorInfo
+            Doctorinfo
           </Link>
         )}
 
