@@ -273,7 +273,7 @@ export default function Header({ user: userProp }: HeaderProps) {
                           <User2 size={16} />
                           Edit
                         </button>
-                        <button
+                        <span
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowProfile(false);
@@ -281,7 +281,7 @@ export default function Header({ user: userProp }: HeaderProps) {
                           className="px-4 py-1 rounded border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition"
                         >
                           Close
-                        </button>
+                        </span>
                       </div>
                     </>
                   ) : (
