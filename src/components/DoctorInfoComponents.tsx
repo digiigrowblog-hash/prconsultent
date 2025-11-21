@@ -10,7 +10,6 @@ import PropTypes from "prop-types";
 interface DoctorInfoProps {
   image: string;
   name: string;
-  age: number | string;
     experience: number | string;
     contact: {
     phone: string;
@@ -40,7 +39,6 @@ DoctorInfo.propTypes = {
 export default function DoctorInfo({
   image,
   name,
-  age,
   experience,
   contact,
   specialization,
@@ -73,7 +71,7 @@ export default function DoctorInfo({
             <span>{name}</span>
           </div>
           <div className="flex gap-3 text-gray-600">
-            <span className="px-2 py-0.5 bg-cyan-50 rounded text-xs">Age: {age}</span>
+            {/* <span className="px-2 py-0.5 bg-cyan-50 rounded text-xs">Age: {age}</span> */}
             <span className="px-2 py-0.5 bg-green-50 rounded text-xs">Exp: {experience} yrs</span>
           </div>
           <div className="flex items-center gap-2">

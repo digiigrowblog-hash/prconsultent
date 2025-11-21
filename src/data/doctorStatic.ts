@@ -95,7 +95,7 @@ Society for Peritoneal Dialysis (ISPD) in Hong Kong and the International Societ
 Nephrology (ISN) in the United Kingdom.`,
     },
     {
-        image: "/images/aashish.jpeg",
+        image: "/images/ashish.webp",
         fallbackName: "Dr. Ashish S Naik",
         fallbackSpecialization: "Spine Surgeon",
         description: `Dr. Ashish S Naik's expertise in treating a wide spectrum of spine conditions 
@@ -106,5 +106,9 @@ that prioritize patient safety and recovery. With a commitment to utilizing the 
 technologies such as robotic surgery and computer navigation, Dr. Naik provides patients 
 with the most effective and minimally invasive solutions for their spinal conditions, 
 helping them regain mobility and improve their quality of life.`,
+    },
+    {
+        image: "/images/ashish.webp",
+        description: `hrithik doctor`,
     },
 ];

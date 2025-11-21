@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_BASE_URL = '/api/auth';
 
 export interface User {
-  id: string;
+  _id: string;
   fullname: string;
   email: string;
   role: string;
