@@ -12,7 +12,6 @@ import type { RootState } from "@/store/store";
 import { getAllProfiles } from "@/feature/auth/authSlice";
 import { createPatient } from "@/feature/patient/patientSlice";
 import { addReferral } from "@/feature/referral/referralSlice";
-import Loading from "@/components/Loading";
 
 interface FormData {
   ReferName: string;
@@ -26,39 +25,122 @@ interface FormData {
   Summary: string;
 }
 
+// Static doctor metadata (images, fallback names, descriptions)
+const staticDoctorMeta = [
+  {
+    image: "/images/drRahul.png",
+    fallbackName: "Dr. Rahul Gupta",
+    fallbackSpecialization: "Interventional Cardiologist",
+    description: `Dr Rahul R Gupta founder surgeon of Cardium is a renowned interventional 
+    cardiologist who has been practising in Mumbai for over 19 years. Dr Gupta ensures 
+    advanced treatment and techniques are available locally. He is a well-known teacher 
+    and mentor.`,
+  },
+  {
+    image: "/images/shoaib.jpg",
+    fallbackName: "Dr. Shoaib F. Padaria",
+    fallbackSpecialization: "Cardiologist",
+    description: `Dr Shoaib Padaria graduated from Seth G S Medical College Mumbai with MD and DM. 
+    Trained in London at Guys Hospital and Brook General Hospitals. Participated in International trials.`,
+  },
+  {
+    image: "/images/manish.jpeg",
+    fallbackName: "Dr. Manish Sontakke",
+    fallbackSpecialization:
+      "Spine Surgeon, Orthopedist and Joint Replacement Surgeon",
+    description: `Dr. Manish Sontakke is a Spine Surgeon, Orthopedist and Joint Replacement Surgeon with 12 years experience.`,
+  },
+  {
+    image: "/images/rahulbhat.jpg",
+    fallbackName: "Dr. Rahul Bhatambare",
+    fallbackSpecialization: "Psychiatrist & Sexologist",
+    description: `Dr. Rahul Bhatambre is a highly experienced psychiatrist and sexologist offering expert care in Navi Mumbai.`,
+  },
+  {
+    image: "/images/alipurwala.jpeg",
+    fallbackName: "Dr. Veeral M Aliporewala",
+    fallbackSpecialization: "Dermatologist",
+    description: `Dr. Veeral M. Aliporewala is a noted dermatologist focused on effective treatment without unnecessary procedures.`,
+  },
+  {
+    image: "/images/dipak.jpg",
+    fallbackName: "Dr. Dipak Bhangale",
+    fallbackSpecialization: "Gastroenterologist",
+    description: `Dr. Dipak Bhangale is a well-known Gastroenterologist in Navi Mumbai with extensive training and practice.`,
+  },
+  {
+    image: "/images/nagarik.webp",
+    fallbackName: "Dr. Amit Nagarik",
+    fallbackSpecialization: "Nephrologist",
+    description: `Dr. Amit Nagarik is a Nephrologist with 18+ years experience and international fellowships.`,
+  },
+  {
+    image: "/images/aashish.jpeg",
+    fallbackName: "Dr. Ashish S Naik",
+    fallbackSpecialization: "Spine Surgeon",
+    description: `Dr. Ashish S Naik treats a wide spectrum of spine conditions using advanced surgical techniques.`,
+  },
+];
+
 export default function DoctorInfoPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, loading, userList } = useAppSelector((state: RootState) => state.auth);
-  const { loading: bookingLoading, error: bookingError } = useAppSelector((state) => state.patient);
+  const { user, loading, userList } = useAppSelector(
+    (state: RootState) => state.auth
+  );
+  const { loading: bookingLoading, error: bookingError } = useAppSelector(
+    (state) => state.patient
+  );
 
   const [imageSource, setImageSource] = useState<"upload" | "camera">("upload");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-// Update your existing useEffect hooks to this single, combined version:
-useEffect(() => {
-  if (!loading) {
-    setIsLoading(false);
-    
-    // Handle authentication and authorization
-    if (!user) {
-      router.push("/signin");
-      return;
-    }
-    
-    if (user.role === "professionaldoctor") {
-      toast.error("Access denied. This page is only available for admins and clinic doctors.");
-      router.push("/");
-      return;
-    }
-    
-    // Only fetch profiles if user is authenticated and authorized
-    dispatch(getAllProfiles());
-  }
-}, [user, loading, router, dispatch]);  // Add dispatch to dependencies
+  useEffect(() => {
+    if (!loading) {
+      setIsLoading(false);
 
-// Remove the other useEffect hooks that check for authentication and getAllProfiles
+      if (!user) {
+        router.push("/signin");
+        return;
+      }
+
+      if (user.role === "professionaldoctor") {
+        toast.error(
+          "Access denied. This page is only available for admins and clinic doctors."
+        );
+        router.push("/");
+        return;
+      }
+
+      dispatch(getAllProfiles());
+    }
+  }, [user, loading, router, dispatch]);
+
+  // Build doctor list combining static + server data
+  const professionalDoctors = userList.filter(
+    (profile) => profile.role === "professionaldoctor"
+  );
+
+  const doctors = staticDoctorMeta.slice(0, 8).map((meta, index) => {
+    const serverDoctor = professionalDoctors[index];
+
+    return {
+      image: meta.image,
+      name: serverDoctor?.fullname || meta.fallbackName,
+      age: 45,
+      experience: serverDoctor?.experience
+        ? `${serverDoctor.experience}+`
+        : "10+",
+      contact: {
+        phone: "+91-9833233174",
+        email: "dineshbhutt2007@gmail.com",
+      },
+      specialization: serverDoctor?.specialization || meta.fallbackSpecialization,
+      description: meta.description,
+    };
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -152,7 +234,9 @@ useEffect(() => {
     }
 
     if (!formData.PatientName || !formData.Age || !formData.Problem) {
-      toast.error("Please fill in all required fields (Patient Name, Age, and Problem)");
+      toast.error(
+        "Please fill in all required fields (Patient Name, Age, and Problem)"
+      );
       return;
     }
 
@@ -181,7 +265,6 @@ useEffect(() => {
         referredDoctorName: formData.ReferName || "",
       };
 
-      // Dispatch RTK thunk for creating patient
       const resultAction = await dispatch(createPatient(requestBody));
       if (createPatient.rejected.match(resultAction)) {
         const error = resultAction.payload || "Failed to book appointment";
@@ -190,13 +273,11 @@ useEffect(() => {
       }
 
       const patientData = resultAction.payload;
-      console.log("Patient Data:", patientData);
       const patientId = patientData._id || patientData.id || patientData.patientId;
 
       const professionalDoctor = userList.find(
         (doc) => doc.fullname.trim() === formData.ReferName.trim()
       );
-      console.log("Professional Doctor:", professionalDoctor);
 
       if (!professionalDoctor || !patientId) {
         toast.error("Missing patient or professional doctor ID for referral.");
@@ -206,13 +287,14 @@ useEffect(() => {
       await dispatch(
         addReferral({
           patientId,
-          professionalDoctorId:  professionalDoctor.id,
+          professionalDoctorId: professionalDoctor.id,
         })
       ).unwrap();
 
-      toast.success(`Patient appointment and referral booked successfully for ${formData.PatientName}`);
+      toast.success(
+        `Patient appointment and referral booked successfully for ${formData.PatientName}`
+      );
       closeForm();
-      
     } catch (err) {
       const errorMessage =
         typeof err === "string"
@@ -225,9 +307,6 @@ useEffect(() => {
     }
   };
 
-  const professionalDoctors = userList.filter((profile) => profile.role === "professionaldoctor");
-  const doctor = professionalDoctors.slice(0, 8);
-
   if (loading || !user || (user && user.role === "professionaldoctor")) {
     return (
       <div className="flex min-h-screen max-w-full bg-white font-sans flex-col">
@@ -235,154 +314,28 @@ useEffect(() => {
         <main className="flex-1 w-full px-2 md:px-0 max-w-2xl mx-auto py-10 flex items-center justify-center mt-20">
           <div className="text-center">
             <p className="text-gray-600">
-              {loading ? "Loading..." : !user ? "Redirecting to login..." : "Access denied. Redirecting..."}
+              {loading
+                ? "Loading..."
+                : !user
+                ? "Redirecting to login..."
+                : "Access denied. Redirecting..."}
             </p>
           </div>
         </main>
       </div>
     );
   }
-  const doctors = [
-    {
-      image: "/images/drRahul.png",
-      name: doctor[0]?.fullname || "Dr. Rahul gupta",
-      age: 45,
-      experience: `${doctor[0]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[0]?.specialization || "Interventional Cardiologist",
-      description: `Dr Rahul R Gupta founder surgeon of Cardium is a renowned interventional 
-                 cardiologist who has been practising in Mumbai for over 19 years. Dr Gupta has ensured
-                 that the most advanced treatment and techniques from all over the world are made available 
-                 to his fellow citizens in India.- If you want to find the Best Cardiologist in Navi Mumbai, 
-                 many people suggest only one name - Dr. Rahul Gupta. He is known as a renowned cardiologist 
-                 because of his vast study and knowledge in this field. He has immense experience of working 
-                 for many years in Navi Mumbai and also abroad.. 
-                 - Dr. Rahul Gupta is not only a Famous Heart Specialist in Navi Mumbai but also he is the
-                   best teacher as well as the best mentor.`,
-    },
-    {
-      image: "/images/shoaib.jpg",
-      name: doctor[1]?.fullname || "Dr. Shoaib F. Padaria",
-      age: 45,
-      experience: `${doctor[1]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[1]?.specialization || "Cardiologist",
-      description:
-        `Dr Shoaib Padaria graduated from the Seth G S Medical College in Mumbai 
-         completing his MD and DM in Cardiology. He was further trained in Interventional Cardiac 
-         and Peripheral Vascular procedures at the Guys Hospital and Brook General Hospitals in 
-         London. He participated in multiple International trials including the pathbreaking 
-         RITA Study. He was part of the 3 member team which performed the first catheter closure 
-         of post infarction Ventricular Septal Defect in London, UK.  He joined Jaslok Hospital in 
-         1991 as Consultant Cardiologist, and currently is also the Director, Department of Vascular 
-         Science. Apart from Coronary Interventions, Dr Padaria speciality is Peripheral Arterial 
-         Angioplasty and Angiography, including Diabetic Foot.`
-    },
-    {
-      image: "/images/manish.jpeg",
-      name: doctor[2]?.fullname || "Dr. Manish Sontakke",
-      age: 45,
-      experience: `${doctor[2]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[2]?.specialization || "Spine Surgeon,Orthopedist and Joint Replacement Surgeon",
-      description: `Dr. Manish Sontakke is a Spine Surgeon,Orthopedist and Joint 
-         Replacement Surgeon in Fortis Hiranandani hospital vashi and has an experience 
-         of 12 years in these fields. He completed MBBS from Mahatma Gandhi Institute of
-          Medical Sciences, Sewagram (MGIMS) in 2000,DNB – Orthopaedics /Orthopedic Surgery 
-          from University of Pune in 2009 and MS - Orthopaedics from University of Pune in 2010.
-          He is a member of Aspin international board. Some of the services provided by the doctor 
-          are: Spine Mobilization, Limb Deformities, Foot Care, Ligament and Tendon Repair and 
-          Ligament Reconstruction etc.`
-    },
-    {
-      image: "/images/rahulbhat.jpg",
-      name: doctor[3]?.fullname || "Dr. Rahul Bhatambare",
-      age: 45,
-      experience: `${doctor[3]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[3]?.specialization || "Psychiatrist & Sexologist",
-      description: `"Dr. Rahul Bhatambre is a highly experienced and renowned psychiatrist 
-         in Navi Mumbai and a leading sexologist in Navi Mumbai, offering expert care for 
-         a wide range of psychiatric disorders, sexual dysfunction treatments, and mental
-          health conditions. Currently practicing at MPCT Hospital, Sanpada, Dr. Bhatambre 
-          has helped thousands of patients regain their emotional and mental well-being 
-          through personalized treatment plans. With a compassionate approach and a commitment 
-          to staying updated with the latest advancements in psychiatry and sexology, 
-          Dr. Bhatambre provides comprehensive care to individuals facing challenges 
-          such as depression, anxiety, relationship issues, and sexual health concerns.`
-    },
-    {
-      image: "/images/alipurwala.jpeg",
-      name: doctor[4]?.fullname || "Dr. Veeral M Aliporewala",
-      age: 45,
-      experience: `${doctor[4]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[4]?.specialization || "Dermatologist",
-      description: `Dr. Veeral M. Aliporewala is a highly-regarded dermatologist, 
-         pediatric dermatologist, and venereologist in Navi Mumbai, known for his 
-         expertise in addressing the root causes of skin and hair issues. With over 
-         15 years of experience, he operates the Aliporewala Skin Clinic in Seawoods.
-         Noted by patients for his genuine, straightforward approach, focusing on 
-         effective treatment rather than unnecessary procedures or costly medications.`
-    },
-    {
-      image: "/images/dipak.jpg",
-      name: doctor[5]?.fullname || "Dr. Dipak Bhangale",
-      age: 45,
-      experience: `${doctor[5]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[5]?.specialization || "Gastroenterologist",
-      description: `Dipak Bhangale - Best Gastroenterologist in Navi Mumbai - Kokilaben Hospital 
-         Dr. Dipak Bhangale Consultant Gastroenterology, Hepatology, Interventional Endoscopy, 
-         Liver Transplantation M.B.B.S., MD, Dr. NB SS (Medical Gastroenterology and Hepatology), 
-         ESEGH (UK) Department: Gastroenterology YEARS OF PRACTICE: 8+ Years GENDER: Male
-         LANGUAGES SPOKEN: Marathi, English, Hindi Make an Appointment Biography
-         Dr. Dipak Dilip Bhangale is an esteemed Medical Gastroenterologist, Hepatologist, 
-         and Interventional Endoscopist with practice in Navi Mumbai. His journey includes 
-         comprehensive superspeciality training at Aster Medcity, Kochi, a renowned center 
-         of excellence in gastroenterology and hepatology in South India. Post his superspeciality 
-         training.`
-    },
-    {
-      image: "/images/nagarik.webp",
-      name: doctor[6]?.fullname || "Dr. Amit Nagarik",
-      age: 45,
-      experience: `${doctor[6]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[6]?.specialization || "Nephrologist",
-      description: `Dr. Amit Nagarik is a highly accomplished medical professional with a 
-         focus on Nephrology, he has more than 18 years of experience in the field of Nephrology. 
-         Holding the prestigious degrees of M.D and DNB (Medicine) along with a specialization 
-         in Nephrology through DNB, Dr. Nagarik has demonstrated exceptional expertise in the 
-         field of internal medicine and kidney-related disorders. His commitment to advancing 
-         his knowledge and skills is evident through his fellowships, notably from the International 
-         Society for Peritoneal Dialysis (ISPD) in Hong Kong and the International Society of 
-         Nephrology (ISN) in the United Kingdom.`
-    },
-    {
-      image: "/images/aashish.jpeg",
-      name: doctor[7]?.fullname || "Dr. Ashish S Naik",
-      age: 45,
-      experience: `${doctor[7]?.experience}+`,
-      contact: { phone: "+91-9833233174", email: "dineshbhutt2007@gmail.com" },
-      specialization: doctor[7]?.specialization || "Spine Surgeon",
-      description: `Dr. Ashish S Naik's expertise in treating a wide spectrum of spine conditions 
-         ensures that patients receive comprehensive and personalized care. From minimally invasive 
-         procedures and endoscopic surgeries to managing complex conditions like spinal tuberculosis, 
-         spinal trauma, and ankylosing spondylitis, Dr. Naik offers advanced, evidence-based treatments 
-         that prioritize patient safety and recovery. With a commitment to utilizing the latest 
-         technologies such as robotic surgery and computer navigation, Dr. Naik provides patients 
-         with the most effective and minimally invasive solutions for their spinal conditions, 
-         helping them regain mobility and improve their quality of life.`
-    },
-  ];
 
   return (
     <div className="flex min-h-screen max-w-full bg-white font-sans flex-col">
       <Header />
       <div className="mt-20" />
       {doctors.map((doctor) => (
-        <div key={doctor.name} onClick={() => openForm(doctor.name)} className="cursor-pointer">
+        <div
+          key={doctor.name}
+          onClick={() => openForm(doctor.name)}
+          className="cursor-pointer"
+        >
           <DoctorInfo
             image={doctor.image}
             name={doctor.name}
@@ -406,10 +359,7 @@ useEffect(() => {
       ))}
 
       {showForm && (
-        <div
-          className="fixed inset-0 bg-black/20 bg-opacity-40 flex justify-center 
-          items-start pt-16 z-50 overflow-auto overscroll-y-contain"
-        >
+        <div className="fixed inset-0 bg-black/20 bg-opacity-40 flex justify-center items-start pt-16 z-50 overflow-auto overscroll-y-contain">
           <form
             onSubmit={handleSubmit}
             className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 mx-2 sm:mx-auto"
@@ -519,7 +469,9 @@ useEffect(() => {
                 <button
                   type="button"
                   className={`px-2 py-1 rounded ${
-                    imageSource === "upload" ? "bg-[#09879a] text-white" : "bg-gray-100 text-gray-700"
+                    imageSource === "upload"
+                      ? "bg-[#09879a] text-white"
+                      : "bg-gray-100 text-gray-700"
                   }`}
                   onClick={() => setImageSource("upload")}
                 >
@@ -528,7 +480,9 @@ useEffect(() => {
                 <button
                   type="button"
                   className={`px-2 py-1 rounded ${
-                    imageSource === "camera" ? "bg-[#09879a] text-white" : "bg-gray-100 text-gray-700"
+                    imageSource === "camera"
+                      ? "bg-[#09879a] text-white"
+                      : "bg-gray-100 text-gray-700"
                   }`}
                   onClick={() => setImageSource("camera")}
                 >
@@ -593,7 +547,9 @@ useEffect(() => {
               </button>
             </div>
             {bookingError && (
-              <p className="text-red-600 mt-2 text-center font-semibold">{bookingError}</p>
+              <p className="text-red-600 mt-2 text-center font-semibold">
+                {bookingError}
+              </p>
             )}
           </form>
         </div>
