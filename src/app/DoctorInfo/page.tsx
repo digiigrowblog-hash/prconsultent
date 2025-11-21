@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
-import DoctorinfoClient from "./DoctorinfoClinic";
+import DoctorinfoClinic from "./DoctorinfoClinic";
 
 // ...existing code...
 export default function Doctorinfo() {
-  return <DoctorinfoClient />;
+  return <DoctorinfoClinic />;
 }
