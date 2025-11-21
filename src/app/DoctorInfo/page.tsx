@@ -26,7 +26,7 @@ interface FormData {
   Summary: string;
 }
 
-export default function DoctorInfoPage() {
+export default function Doctorinfo() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user, loading, userList } = useAppSelector(
