@@ -1,4 +1,3 @@
-// src/app/doctorinfo/loading.tsx
 export default function Loading() {
   return (
     <div className="flex min-h-screen max-w-full bg-white font-sans flex-col">
