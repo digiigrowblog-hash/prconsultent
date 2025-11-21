@@ -12,6 +12,7 @@ import type { RootState } from "@/store/store";
 import { getAllProfiles } from "@/feature/auth/authSlice";
 import { createPatient } from "@/feature/patient/patientSlice";
 import { addReferral } from "@/feature/referral/referralSlice";
+import Loading from "@/components/Loading";
 
 interface FormData {
   ReferName: string;
@@ -33,22 +34,31 @@ export default function DoctorInfoPage() {
 
   const [imageSource, setImageSource] = useState<"upload" | "camera">("upload");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push("/signin");
-      } else if (user.role === "professionaldoctor") {
-        toast.error("Access denied. This page is only available for admins and clinic doctors.");
-        router.push("/");
-      }
+// Update your existing useEffect hooks to this single, combined version:
+useEffect(() => {
+  if (!loading) {
+    setIsLoading(false);
+    
+    // Handle authentication and authorization
+    if (!user) {
+      router.push("/signin");
+      return;
     }
-  }, [user, loading, router]);
-
-  useEffect(() => {
+    
+    if (user.role === "professionaldoctor") {
+      toast.error("Access denied. This page is only available for admins and clinic doctors.");
+      router.push("/");
+      return;
+    }
+    
+    // Only fetch profiles if user is authenticated and authorized
     dispatch(getAllProfiles());
-  }, [dispatch]);
+  }
+}, [user, loading, router, dispatch]);  // Add dispatch to dependencies
 
+// Remove the other useEffect hooks that check for authentication and getAllProfiles
   const [showForm, setShowForm] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
