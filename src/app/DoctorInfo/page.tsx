@@ -13,6 +13,9 @@ import { getAllProfiles } from "@/feature/auth/authSlice";
 import { createPatient } from "@/feature/patient/patientSlice";
 import { addReferral } from "@/feature/referral/referralSlice";
 import { staticDoctorMeta } from "@/data/doctorStatic";
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 
 interface FormData {
   ReferName: string;
@@ -40,6 +43,16 @@ export default function Doctorinfo() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  if (loading || isLoading) {
+  return (
+    <div className="flex min-h-screen max-w-full bg-white font-sans flex-col">
+      <div className="flex-1 flex items-center justify-center">
+        <p>Loading doctor information...</p>
+      </div>
+    </div>
+  );
+}
+
   useEffect(() => {
     if (!loading) {
       setIsLoading(false);
@@ -49,13 +62,13 @@ export default function Doctorinfo() {
         return;
       }
 
-      if (user.role === "professionaldoctor") {
-        toast.error(
-          "Access denied. This page is only available for admins and clinic doctors."
-        );
-        router.push("/");
-        return;
-      }
+      // if (user.role === "professionaldoctor") {
+      //   toast.error(
+      //     "Access denied. This page is only available for admins and clinic doctors."
+      //   );
+      //   router.push("/");
+      //   return;
+      // }
 
       dispatch(getAllProfiles());
     }

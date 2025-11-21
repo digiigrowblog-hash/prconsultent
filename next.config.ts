@@ -1,8 +1,11 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Add this if you're using static exports
-  // If you're using API routes, add this:
+  experimental: {
+    serverActions: true,
+  },
+  // Remove output: 'standalone' as it's not needed for Vercel
   async rewrites() {
     return [
       {
