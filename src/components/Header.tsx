@@ -18,7 +18,7 @@ interface HeaderProps {
 
 interface EditFormData {
   fullname: string;
-  phone: string ;
+  phone: string;
   specialization: string;
   experience: number | null;
 }
@@ -35,7 +35,7 @@ export default function Header({ user: userProp }: HeaderProps) {
 
   const reduxUser = useAppSelector((state: RootState) => state.auth.user);
   const user = reduxUser || userProp;
-  const { loading: authLoading , isInitialized  } = useAppSelector((state: RootState) => state.auth);
+  const { loading: authLoading, isInitialized } = useAppSelector((state: RootState) => state.auth);
   const showAuthButtons = isInitialized;
 
   // Get unread notification count
@@ -50,10 +50,10 @@ export default function Header({ user: userProp }: HeaderProps) {
   });
 
   useEffect(() => {
-  if (user) {
-    dispatch(fetchNotifications());
-  }
-}, [user, dispatch]);
+    if (user) {
+      dispatch(fetchNotifications());
+    }
+  }, [user, dispatch]);
 
   useEffect(() => {
     if (user) {
@@ -193,12 +193,12 @@ export default function Header({ user: userProp }: HeaderProps) {
           </Link>
         )}
 
-         {showAuthButtons && user && user.role=== "admin" ?(
+        {showAuthButtons && user && user.role === "admin" ? (
           <Link href="/dashboard"
             className={`${pathname === "/dashboard" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block relative`}
           >Dashboard
           </Link>
-        ): (
+        ) : (
           <Link
             href="/notification"
             className={`${pathname === "/notification" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block relative`}
@@ -398,7 +398,7 @@ export default function Header({ user: userProp }: HeaderProps) {
         )}
 
         {/* Auth / Logout links */}
-         {showAuthButtons && user ? (
+        {showAuthButtons && user ? (
           <button
             onClick={handleDelete}
             className={`${pathname === "/signin" ? "text-blue-600 font-semibold" : "text-gray-700"}
@@ -457,7 +457,7 @@ export default function Header({ user: userProp }: HeaderProps) {
               {user && (user.role === "admin" || user.role === "clinicdoctor") && (
                 <Link
                   href="/doctorinfo"
-                  className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/doctorInfo" ? "text-[#00a0a8]" : "text-gray-700"
+                  className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/doctorinfo" ? "text-[#00a0a8]" : "text-gray-700"
                     } hover:text-[#00a0a8]`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -465,13 +465,13 @@ export default function Header({ user: userProp }: HeaderProps) {
                 </Link>
               )}
               {
-                user && user.role === "admin" &&(
+                user && user.role === "admin" && (
                   <Link
-                  href="/dashboard"
-                  className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/dahsboard" ? "text-[#00a0a8]" : "text-gray-700"
-                    } hover:text-[#00a0a8] relative`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >Dashboard</Link>
+                    href="/dashboard"
+                    className={`block px-3 py-2 rounded-md font-semibold ${pathname === "/dahsboard" ? "text-[#00a0a8]" : "text-gray-700"
+                      } hover:text-[#00a0a8] relative`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >Dashboard</Link>
 
                 )
               }
