@@ -35,7 +35,8 @@ export default function Header({ user: userProp }: HeaderProps) {
 
   const reduxUser = useAppSelector((state: RootState) => state.auth.user);
   const user = reduxUser || userProp;
-  const { loading: authLoading } = useAppSelector((state: RootState) => state.auth);
+  const { loading: authLoading , isInitialized  } = useAppSelector((state: RootState) => state.auth);
+  const showAuthButtons = isInitialized;
 
   // Get unread notification count
   const { notifications } = useAppSelector((state: RootState) => state.notification);
@@ -183,16 +184,16 @@ export default function Header({ user: userProp }: HeaderProps) {
           Home
         </Link>
 
-        {user && (user.role === "admin" || user.role === "clinicdoctor") && (
+        {showAuthButtons && user && (user.role === "admin" || user.role === "clinicdoctor") && (
           <Link
             href="/doctorinfo"
             className={`${pathname === "/doctorinfo" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block`}
           >
-            DoctorInfo
+            Doctorinfo
           </Link>
         )}
 
-        {user && user.role=== "admin" ?(
+         {showAuthButtons && user && user.role=== "admin" ?(
           <Link href="/dashboard"
             className={`${pathname === "/dashboard" ? "text-[#00a0a8] font-semibold" : "text-gray-700 font-semibold"} hover:text-[#00a0a8] hidden md:block relative`}
           >Dashboard
@@ -212,7 +213,7 @@ export default function Header({ user: userProp }: HeaderProps) {
         )}
 
         {/* User Icon with Popover */}
-        {user ? (
+        {showAuthButtons && user ? (
           <button
             onClick={() => setShowProfile((prev) => !prev)}
             className="relative focus:outline-none"
@@ -272,7 +273,7 @@ export default function Header({ user: userProp }: HeaderProps) {
                           <User2 size={16} />
                           Edit
                         </button>
-                        <button
+                        <span
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowProfile(false);
@@ -280,7 +281,7 @@ export default function Header({ user: userProp }: HeaderProps) {
                           className="px-4 py-1 rounded border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition"
                         >
                           Close
-                        </button>
+                        </span>
                       </div>
                     </>
                   ) : (
@@ -397,7 +398,7 @@ export default function Header({ user: userProp }: HeaderProps) {
         )}
 
         {/* Auth / Logout links */}
-        {user ? (
+         {showAuthButtons && user ? (
           <button
             onClick={handleDelete}
             className={`${pathname === "/signin" ? "text-blue-600 font-semibold" : "text-gray-700"}

@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_BASE_URL = '/api/auth';
 
 export interface User {
-  id: string;
+  _id: string;
   fullname: string;
   email: string;
   role: string;
@@ -47,4 +47,9 @@ export async function updateProfileAPI(data: Partial<Omit<User, 'id' | 'email'>>
 export async function getAllProfilesAPI(): Promise<User[]> {
   const response = await axios.get(`${API_BASE_URL}/getallprofiles`, { withCredentials: true });
   return response.data.profiles;
+}
+
+export async function searchByNameAPI(name:string): Promise<User[]> {
+  const response =await axios.get(`${API_BASE_URL}/searchbyname?name=${name}`);
+  return response.data.users;
 }

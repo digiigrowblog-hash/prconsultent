@@ -1,37 +1,63 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchReferrals } from "@/feature/allreferrals/allReferralSlice";
 import { ReusableTable } from "./Tables";
 import { SearchByName } from "./SearchByName";
 
-type Referrences = {
+type ReferralType = {
+  _id: string;
   clinicDoctor: string;
   professionalDoctor: string;
-  patientName: string;
+  patient: string;
   status: string;
 };
 
-
-  const referrenceData: Referrences[] = [
-    { clinicDoctor: "Dr. Raj Singh", professionalDoctor: "Cardiology", patientName: "raj@clinic.com", status: "1234567890", },
-
-  ];
-
-  const columns: { key: keyof Referrences; label: string }[] = [
+const columns: { key: keyof ReferralType; label: string }[] = [
   { key: "clinicDoctor", label: "Clinic Doctor" },
   { key: "professionalDoctor", label: "Professional Doctor" },
-  { key: "patientName", label: "Patient Name" },
+  { key: "patient", label: "Patient Name" },
   { key: "status", label: "Status" },
 ];
 
-const Referrence = () => {
- const [search, setSearch] = useState("");
-   const filtered = referrenceData.filter((d) =>
-     d.patientName.toLowerCase().includes(search.toLowerCase())
-   );
+export default function Referrence() {
+  const dispatch = useAppDispatch();
+  const { referrals, loading } = useAppSelector((state) => state.referrals);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-   return (
-     <div><SearchByName value={search} onChange={setSearch} />
-       <ReusableTable columns={columns} data={filtered} /></div>
-   )
+  // Debounce search input with 500ms delay
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  useEffect(() => {
+    dispatch(fetchReferrals());
+  }, [dispatch]);
+
+  // Filter referrals using debouncedSearch
+  const filtered = debouncedSearch
+    ? referrals.filter((r) =>
+        r.patient.toLowerCase().includes(debouncedSearch.toLowerCase())
+      )
+    : referrals;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-bold text-xl text-[#09879a]">Referrals</h2>
+        <SearchByName
+          value={search}
+          onChange={setSearch}
+          placeholder="Search by patient name..."
+        />
+      </div>
+      <ReusableTable columns={columns} data={filtered} loading={loading} />
+    </div>
+  );
 }
-
-export default Referrence
