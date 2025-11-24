@@ -18,7 +18,7 @@ import { updateReferral } from "@/feature/referral/referralSlice";
 export default function NotificationPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, loading } = useAppSelector((state: RootState) => state.auth);
+  const { user, loading, isInitialized } = useAppSelector((state: RootState) => state.auth);
   const { notifications, loading: notifsLoading } = useAppSelector(
     (state: RootState) => state.notification
   );
@@ -27,10 +27,10 @@ export default function NotificationPage() {
   const [actionDone, setActionDone] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (isInitialized && !loading && !user) {
       router.push("/signin");
     }
-  }, [user, loading, router]);
+  }, [user, loading, isInitialized, router]);
 
   useEffect(() => {
     if (user) {
@@ -42,7 +42,7 @@ export default function NotificationPage() {
     setActionDone(false);
   }, [selectedNotif]);
 
-  if (loading || !user) {
+  if (!isInitialized || loading || !user) {
     return (
       <div className="min-h-screen flex flex-col bg-white font-sans">
         <Header />
@@ -152,17 +152,16 @@ export default function NotificationPage() {
                   initial={{ opacity: 0, translateY: 15 }}
                   animate={{ opacity: 1, translateY: 0 }}
                   transition={{ duration: 0.4, delay: idx * 0.05 }}
-                  className={`w-full rounded-lg shadow bg-white flex items-start gap-4 px-4 py-5 border-l-4 cursor-pointer ${
-                    notif.type === "referral-response"
+                  className={`w-full rounded-lg shadow bg-white flex items-start gap-4 px-4 py-5 border-l-4 cursor-pointer ${notif.type === "referral-response"
                       ? "border-green-400 shadow-green-100"
                       : notif.type === "referral"
-                      ? "border-cyan-400 shadow-cyan-100"
-                      : notif.type === "info"
-                      ? "border-blue-400 shadow-blue-100"
-                      : notif.type === "warning"
-                      ? "border-yellow-300 shadow-yellow-100"
-                      : "border-gray-200"
-                  }`}
+                        ? "border-cyan-400 shadow-cyan-100"
+                        : notif.type === "info"
+                          ? "border-blue-400 shadow-blue-100"
+                          : notif.type === "warning"
+                            ? "border-yellow-300 shadow-yellow-100"
+                            : "border-gray-200"
+                    }`}
                   onClick={() => setSelectedNotif(notif)}
                 >
                   <div className="shrink-0">{icon}</div>
@@ -209,18 +208,16 @@ export default function NotificationPage() {
                 <button
                   onClick={handleCancel}
                   disabled={actionDone}
-                  className={`px-5 py-2 rounded border border-gray-400 hover:bg-gray-100 transition w-full sm:w-auto ${
-                    actionDone ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`px-5 py-2 rounded border border-gray-400 hover:bg-gray-100 transition w-full sm:w-auto ${actionDone ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAccept}
                   disabled={actionDone}
-                  className={`px-5 py-2 rounded bg-[#09879a] text-white font-semibold hover:bg-[#066172] transition w-full sm:w-auto ${
-                    actionDone ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`px-5 py-2 rounded bg-[#09879a] text-white font-semibold hover:bg-[#066172] transition w-full sm:w-auto ${actionDone ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   Accept
                 </button>
