@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ReduxProviderWrapper from "@/app/ReduxProviderWrapper";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import { Toaster } from "react-hot-toast";
 import GlobalAuthProvider from "./GlobleAuthProvider";
@@ -25,6 +26,7 @@ export default function RootLayout({
         <ReduxProviderWrapper>
           <GlobalAuthProvider>
              {children}
+             <SpeedInsights />
               <Toaster/> 
           </GlobalAuthProvider>
                         
