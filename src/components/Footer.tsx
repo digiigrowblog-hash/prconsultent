@@ -80,7 +80,7 @@ export default function Footer() {
             <Phone size={18} /> Phone: +91-9833233174
           </a>
           <a href="mailto:info@prconsultant.com" className="flex items-center gap-2 hover:text-[#66c2d7] transition-colors">
-            <Mail size={18} /> Email: dineshbhutt2007@gmail.com
+            <Mail size={18} /> Email: dineshbhatt2007@gmail.com
           </a>
         </motion.div>
 
