@@ -76,7 +76,7 @@ export default function DoctorinfoClinic() {
                 : "10+",
             contact: {
                 phone: "+91-9833233174",
-                email: "dineshbhutt2007@gmail.com",
+                email: "dineshbhatt2007@gmail.com",
             },
             specialization: serverDoctor?.specialization || meta.fallbackSpecialization,
             description: meta?.description,
